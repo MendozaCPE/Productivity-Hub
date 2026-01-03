@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="A comprehensive productivity web app with habit tracking, Pomodoro timer, task management, and analytics">
+    <title>Productivity Hub - Your Ultimate Productivity Companion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- SVG Gradients -->
+    <svg width="0" height="0" style="position: absolute;">
+        <defs>
+            <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <!-- Background Effects -->
+    <div class="bg-gradient"></div>
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">⚡</div>
+                <h1>ProductivityHub</h1>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="pomodoro">
+                    <span class="nav-icon">🍅</span>
+                    <span class="nav-label">Pomodoro</span>
+                </button>
+                <button class="nav-item" data-tab="habits">
+                    <span class="nav-icon">✨</span>
+                    <span class="nav-label">Habits</span>
+                </button>
+                <button class="nav-item" data-tab="tasks">
+                    <span class="nav-icon">✓</span>
+                    <span class="nav-label">Tasks</span>
+                </button>
+                <button class="nav-item" data-tab="goals">
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-label">Goals</span>
+                </button>
+                <button class="nav-item" data-tab="focus">
+                    <span class="nav-icon">🧘</span>
+                    <span class="nav-label">Focus Mode</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="streak-badge">
+                    <div class="streak-icon">🔥</div>
+                    <div class="streak-info">
+                        <div class="streak-number" id="currentStreak">0</div>
+                        <div class="streak-label">Day Streak</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <section id="dashboard" class="tab-content active">
+                <header class="page-header">
+                    <div>
+                        <h2 class="page-title">Dashboard</h2>
+                        <p class="page-subtitle" id="dashboardGreeting">Welcome back!</p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="date-display" id="currentDate"></div>
+                    </div>
+                </header>
+
+                <div class="dashboard-grid">
+                    <!-- Quick Stats -->
+                    <div class="stat-card">
+                        <div class="stat-icon">🍅</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="todayPomodoros">0</div>
+                            <div class="stat-label">Pomodoros Today</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">✓</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="todayTasks">0</div>
+                            <div class="stat-label">Tasks Completed</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">✨</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="todayHabits">0%</div>
+                            <div class="stat-label">Habits Completed</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="todayFocusTime">0h</div>
+                            <div class="stat-label">Focus Time</div>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Overview Chart -->
+                    <div class="card chart-card">
+                        <h3 class="card-title">Weekly Productivity</h3>
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+
+                    <!-- Habit Completion Chart -->
+                    <div class="card chart-card">
+                        <h3 class="card-title">Habit Completion Rate</h3>
+                        <canvas id="habitCompletionChart"></canvas>
+                    </div>
+
+                    <!-- Today's Goals Preview -->
+                    <div class="card goals-preview">
+                        <h3 class="card-title">Today's Goals</h3>
+                        <div id="goalsPreview" class="goals-preview-list"></div>
+                    </div>
+
+                    <!-- Quick Tasks -->
+                    <div class="card tasks-preview">
+                        <h3 class="card-title">Upcoming Tasks</h3>
+                        <div id="tasksPreview" class="tasks-preview-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pomodoro Tab -->
+            <section id="pomodoro" class="tab-content">
+                <header class="page-header">
+                    <div>
+                        <h2 class="page-title">Pomodoro Timer</h2>
+                        <p class="page-subtitle">Stay focused with the Pomodoro technique</p>
+                    </div>
+                </header>
+
+                <div class="pomodoro-container">
+                    <div class="pomodoro-card">
+                        <div class="timer-mode-selector">
+                            <button class="mode-btn active" data-mode="work">Work</button>
+                            <button class="mode-btn" data-mode="short">Short Break</button>
+                            <button class="mode-btn" data-mode="long">Long Break</button>
+                        </div>
+
+                        <div class="timer-display">
+                            <svg class="timer-ring" viewBox="0 0 300 300">
+                                <circle class="timer-ring-bg" cx="150" cy="150" r="130"></circle>
+                                <circle class="timer-ring-progress" cx="150" cy="150" r="130"></circle>
+                            </svg>
+                            <div class="timer-content">
+                                <div class="timer-time" id="timerDisplay">25:00</div>
+                                <div class="timer-label" id="timerLabel">Focus Time</div>
+                            </div>
+                        </div>
+
+                        <div class="timer-controls">
+                            <button class="btn-timer btn-primary" id="startPauseBtn">
+                                <span id="startPauseText">Start</span>
+                            </button>
+                            <button class="btn-timer btn-secondary" id="resetBtn">Reset</button>
+                        </div>
+
+                        <div class="pomodoro-stats">
+                            <div class="pomo-stat">
+                                <div class="pomo-stat-value" id="sessionCount">0</div>
+                                <div class="pomo-stat-label">Sessions Today</div>
+                            </div>
+                            <div class="pomo-stat">
+                                <div class="pomo-stat-value" id="totalFocusTime">0m</div>
+                                <div class="pomo-stat-label">Total Focus</div>
+                            </div>
+                        </div>
+
+                        <div class="timer-settings">
+                            <h4>Timer Settings</h4>
+                            <div class="setting-row">
+                                <label>Work Duration (min)</label>
+                                <input type="number" id="workDuration" value="25" min="1" max="60">
+                            </div>
+                            <div class="setting-row">
+                                <label>Short Break (min)</label>
+                                <input type="number" id="shortBreakDuration" value="5" min="1" max="30">
+                            </div>
+                            <div class="setting-row">
+                                <label>Long Break (min)</label>
+                                <input type="number" id="longBreakDuration" value="15" min="1" max="60">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Habits Tab -->
+            <section id="habits" class="tab-content">
+                <header class="page-header">
+                    <div>
+                        <h2 class="page-title">Habit Tracker</h2>
+                        <p class="page-subtitle">Build better habits, one day at a time</p>
+                    </div>
+                    <button class="btn-primary" id="addHabitBtn">+ Add Habit</button>
+                </header>
+
+                <div class="habits-grid">
+                    <div class="card habits-list-card">
+                        <h3 class="card-title">My Habits</h3>
+                        <div id="habitsList" class="habits-list"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">Weekly Progress</h3>
+                        <canvas id="habitsWeeklyChart"></canvas>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">Monthly Trends</h3>
+                        <canvas id="habitsMonthlyChart"></canvas>
+                    </div>
+
+                    <div class="card habits-stats">
+                        <h3 class="card-title">Statistics</h3>
+                        <div class="habit-stat-item">
+                            <span class="habit-stat-label">Total Habits</span>
+                            <span class="habit-stat-value" id="totalHabits">0</span>
+                        </div>
+                        <div class="habit-stat-item">
+                            <span class="habit-stat-label">Completion Rate</span>
+                            <span class="habit-stat-value" id="habitCompletionRate">0%</span>
+                        </div>
+                        <div class="habit-stat-item">
+                            <span class="habit-stat-label">Best Streak</span>
+                            <span class="habit-stat-value" id="bestStreak">0 days</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tasks Tab -->
+            <section id="tasks" class="tab-content">
+                <header class="page-header">
+                    <div>
+                        <h2 class="page-title">Task Manager</h2>
+                        <p class="page-subtitle">Organize and prioritize your work</p>
+                    </div>
+                    <button class="btn-primary" id="addTaskBtn">+ Add Task</button>
+                </header>
+
+                <div class="tasks-container">
+                    <div class="task-input-card card">
+                        <input type="text" id="taskInput" placeholder="What needs to be done?" class="task-input">
+                        <div class="task-input-actions">
+                            <select id="taskPriority" class="task-priority-select">
+                                <option value="low">Low Priority</option>
+                                <option value="medium" selected>Medium Priority</option>
+                                <option value="high">High Priority</option>
+                            </select>
+                            <button class="btn-primary" id="addTaskSubmit">Add Task</button>
+                        </div>
+                    </div>
+
+                    <div class="tasks-lists">
+                        <div class="card task-list-card">
+                            <h3 class="card-title">Active Tasks</h3>
+                            <div id="activeTasks" class="task-list"></div>
+                        </div>
+
+                        <div class="card task-list-card">
+                            <h3 class="card-title">Completed Tasks</h3>
+                            <div id="completedTasks" class="task-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Goals Tab -->
+            <section id="goals" class="tab-content">
+                <header class="page-header">
+                    <div>
+                        <h2 class="page-title">Daily Goals</h2>
+                        <p class="page-subtitle">Set your intentions for today</p>
+                    </div>
+                </header>
+
+                <div class="goals-container">
+                    <div class="card quote-card">
+                        <div class="quote-icon">💭</div>
+                        <blockquote class="quote" id="motivationalQuote">
+                            "The secret of getting ahead is getting started."
+                        </blockquote>
+                        <cite class="quote-author" id="quoteAuthor">- Mark Twain</cite>
+                    </div>
+
+                    <div class="card goals-input-card">
+                        <h3 class="card-title">Today's Goals</h3>
+                        <p class="card-subtitle">Set 3-5 main goals for today</p>
+                        <div class="goal-input-group">
+                            <input type="text" id="goalInput" placeholder="Enter a goal..." class="goal-input">
+                            <button class="btn-primary" id="addGoalBtn">Add Goal</button>
+                        </div>
+                        <div id="goalsList" class="goals-list"></div>
+                    </div>
+
+                    <div class="card goals-progress-card">
+                        <h3 class="card-title">Progress</h3>
+                        <div class="progress-ring-container">
+                            <svg class="progress-ring" viewBox="0 0 200 200">
+                                <circle class="progress-ring-bg" cx="100" cy="100" r="80"></circle>
+                                <circle class="progress-ring-fill" cx="100" cy="100" r="80" id="goalsProgressRing">
+                                </circle>
+                            </svg>
+                            <div class="progress-text">
+                                <div class="progress-percentage" id="goalsProgress">0%</div>
+                                <div class="progress-label">Complete</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Focus Mode Tab -->
+            <section id="focus" class="tab-content">
+                <header class="page-header">
+                    <div>
+                        <h2 class="page-title">Focus Mode</h2>
+                        <p class="page-subtitle">Eliminate distractions and get in the zone</p>
+                    </div>
+                </header>
+
+                <div class="focus-container">
+                    <div class="focus-main">
+                        <div class="focus-timer-display">
+                            <div class="focus-time" id="focusTimerDisplay">00:00</div>
+                            <div class="focus-label" id="focusLabel">Ready to focus?</div>
+                        </div>
+
+                        <div class="focus-controls">
+                            <button class="btn-focus btn-primary" id="startFocusBtn">Start Focus Session</button>
+                            <button class="btn-focus btn-secondary" id="endFocusBtn" style="display: none;">End
+                                Session</button>
+                        </div>
+
+                        <div class="focus-task-input">
+                            <input type="text" id="focusTaskInput" placeholder="What are you working on?"
+                                class="focus-input">
+                        </div>
+                    </div>
+
+                    <div class="focus-stats-card card">
+                        <h3 class="card-title">Today's Focus Sessions</h3>
+                        <div id="focusSessionsList" class="focus-sessions-list"></div>
+                        <div class="focus-total">
+                            <span>Total Focus Time:</span>
+                            <span id="totalFocusTimeToday">0m</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Habit Modal -->
+    <div id="habitModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Habit</h3>
+                <button class="modal-close" id="closeHabitModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Habit Name</label>
+                    <input type="text" id="habitName" placeholder="e.g., Morning Exercise" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-picker">
+                        <button class="color-option" data-color="#6366f1" style="background: #6366f1;"></button>
+                        <button class="color-option" data-color="#14b8a6" style="background: #14b8a6;"></button>
+                        <button class="color-option" data-color="#10b981" style="background: #10b981;"></button>
+                        <button class="color-option" data-color="#f59e0b" style="background: #f59e0b;"></button>
+                        <button class="color-option" data-color="#ef4444" style="background: #ef4444;"></button>
+                        <button class="color-option" data-color="#ec4899" style="background: #ec4899;"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelHabitBtn">Cancel</button>
+                <button class="btn-primary" id="saveHabitBtn">Save Habit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <div id="confetti"></div>
+
+    <script src="charts.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
