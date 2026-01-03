@@ -25,7 +25,7 @@ class ChartRenderer {
     }
 
     // Draw Bar Chart
-    drawBarChart(data, options = {}) {
+    drawBarChart(options = {}) {
         this.clear();
         const {
             labels = [],
@@ -89,7 +89,7 @@ class ChartRenderer {
     }
 
     // Draw Line Chart
-    drawLineChart(data, options = {}) {
+    drawLineChart(options = {}) {
         this.clear();
         const {
             labels = [],
@@ -176,7 +176,7 @@ class ChartRenderer {
     }
 
     // Draw Donut Chart
-    drawDonutChart(data, options = {}) {
+    drawDonutChart(options = {}) {
         this.clear();
         const {
             values = [],
