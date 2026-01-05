@@ -32,7 +32,8 @@ class ChartRenderer {
         const {
             labels = [],
             values = [],
-            colors = ['#6d28d9', '#059669', '#d97706', '#dc2626', '#db2777'],
+            // Palette: Hot Pink (#ec4899), Soft Periwinkle (#c7d2fe), Vivid Fuchsia (#d946ef), Rose (#f43f5e), Deep Indigo (#1e1b4b)
+            colors = ['#ec4899', '#c7d2fe', '#d946ef', '#f43f5e', '#1e1b4b'],
             showGrid = true,
             showValues = true
         } = options;
@@ -45,7 +46,7 @@ class ChartRenderer {
 
         // Draw grid
         if (showGrid) {
-            this.ctx.strokeStyle = '#e5e7eb';
+            this.ctx.strokeStyle = '#1e1b4b'; // Deep Indigo
             this.ctx.lineWidth = 2; // Thicker grid lines
             for (let i = 0; i <= 5; i++) {
                 const y = padding + (chartHeight / 5) * i;
@@ -71,20 +72,20 @@ class ChartRenderer {
             this.ctx.fill();
 
             // Add border to bars
-            this.ctx.strokeStyle = '#000';
+            this.ctx.strokeStyle = '#1e1b4b';
             this.ctx.lineWidth = 2;
             this.ctx.stroke();
 
             // Draw value on top
             if (showValues && value > 0) {
-                this.ctx.fillStyle = '#000';
+                this.ctx.fillStyle = '#1e1b4b';
                 this.ctx.font = '10px "Press Start 2P"';
                 this.ctx.textAlign = 'center';
                 this.ctx.fillText(value, x + width / 2, y - 10);
             }
 
             // Draw label
-            this.ctx.fillStyle = '#000';
+            this.ctx.fillStyle = '#1e1b4b';
             this.ctx.font = '8px "Press Start 2P"';
             this.ctx.textAlign = 'center';
             this.ctx.fillText(labels[index] || '', x + width / 2, this.height - padding + 20);
@@ -111,7 +112,7 @@ class ChartRenderer {
 
         // Draw grid
         if (showGrid) {
-            this.ctx.strokeStyle = '#e5e7eb';
+            this.ctx.strokeStyle = '#1e1b4b';
             this.ctx.lineWidth = 2;
             for (let i = 0; i <= 5; i++) {
                 const y = padding + (chartHeight / 5) * i;
@@ -124,7 +125,8 @@ class ChartRenderer {
 
         // Draw each dataset
         datasets.forEach((dataset, datasetIndex) => {
-            const { values, color = '#6d28d9', label = '' } = dataset;
+            // Default color: Deep Indigo
+            const { values, color = '#1e1b4b', label = '' } = dataset;
             const pointSpacing = chartWidth / (values.length - 1 || 1);
 
             // Draw line
@@ -157,7 +159,7 @@ class ChartRenderer {
                     this.ctx.fillRect(Math.round(x - 6), Math.round(y - 6), 12, 12);
 
                     // Border
-                    this.ctx.strokeStyle = '#000';
+                    this.ctx.strokeStyle = '#1e1b4b';
                     this.ctx.lineWidth = 2;
                     this.ctx.strokeRect(Math.round(x - 6), Math.round(y - 6), 12, 12);
                 });
@@ -167,7 +169,7 @@ class ChartRenderer {
             if (datasetIndex === 0) {
                 labels.forEach((label, index) => {
                     const x = padding + index * pointSpacing;
-                    this.ctx.fillStyle = '#000';
+                    this.ctx.fillStyle = '#1e1b4b';
                     this.ctx.font = '8px "Press Start 2P"';
                     this.ctx.textAlign = 'center';
                     this.ctx.fillText(label, x, this.height - padding + 20);
