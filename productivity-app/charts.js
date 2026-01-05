@@ -7,8 +7,8 @@ class ChartRenderer {
         this.canvas = document.getElementById(canvasId);
         if (!this.canvas) return;
         this.ctx = this.canvas.getContext('2d');
-        // Disable anti-aliasing for pixel look
-        this.ctx.imageSmoothingEnabled = false;
+        // Enable anti-aliasing for clear text, even if shapes are blocky
+        this.ctx.imageSmoothingEnabled = true;
         this.setupCanvas();
     }
 
@@ -32,7 +32,7 @@ class ChartRenderer {
         const {
             labels = [],
             values = [],
-            // Palette: Hot Pink (#ec4899), Soft Periwinkle (#c7d2fe), Vivid Fuchsia (#d946ef), Rose (#f43f5e), Deep Indigo (#1e1b4b)
+            // Palette: Hot Pink, Soft Periwinkle, Vivid Fuchsia, Rose, Deep Indigo
             colors = ['#ec4899', '#c7d2fe', '#d946ef', '#f43f5e', '#1e1b4b'],
             showGrid = true,
             showValues = true
@@ -46,8 +46,8 @@ class ChartRenderer {
 
         // Draw grid
         if (showGrid) {
-            this.ctx.strokeStyle = '#1e1b4b'; // Deep Indigo
-            this.ctx.lineWidth = 2; // Thicker grid lines
+            this.ctx.strokeStyle = '#eee'; // Lighter grid
+            this.ctx.lineWidth = 1;
             for (let i = 0; i <= 5; i++) {
                 const y = padding + (chartHeight / 5) * i;
                 this.ctx.beginPath();
@@ -64,29 +64,28 @@ class ChartRenderer {
             const y = this.height - padding - barHeight;
             const width = barWidth * 0.6;
 
-            // Draw bar (Solid color, no gradient)
+            // Draw bar
             this.ctx.fillStyle = colors[index % colors.length];
             this.ctx.beginPath();
-            // Regular rect instead of roundRect
             this.ctx.rect(Math.round(x), Math.round(y), Math.round(width), Math.round(barHeight));
             this.ctx.fill();
 
-            // Add border to bars
+            // Add border (Deep Indigo)
             this.ctx.strokeStyle = '#1e1b4b';
             this.ctx.lineWidth = 2;
             this.ctx.stroke();
 
-            // Draw value on top
+            // Draw value on top - CLEAN FONT
             if (showValues && value > 0) {
                 this.ctx.fillStyle = '#1e1b4b';
-                this.ctx.font = '10px "Press Start 2P"';
+                this.ctx.font = 'bold 11px Inter';
                 this.ctx.textAlign = 'center';
-                this.ctx.fillText(value, x + width / 2, y - 10);
+                this.ctx.fillText(value, x + width / 2, y - 8);
             }
 
-            // Draw label
+            // Draw label - CLEAN FONT
             this.ctx.fillStyle = '#1e1b4b';
-            this.ctx.font = '8px "Press Start 2P"';
+            this.ctx.font = '600 10px Inter'; // Semi-bold for legibility
             this.ctx.textAlign = 'center';
             this.ctx.fillText(labels[index] || '', x + width / 2, this.height - padding + 20);
         });
@@ -112,8 +111,8 @@ class ChartRenderer {
 
         // Draw grid
         if (showGrid) {
-            this.ctx.strokeStyle = '#1e1b4b';
-            this.ctx.lineWidth = 2;
+            this.ctx.strokeStyle = '#eee';
+            this.ctx.lineWidth = 1;
             for (let i = 0; i <= 5; i++) {
                 const y = padding + (chartHeight / 5) * i;
                 this.ctx.beginPath();
@@ -125,13 +124,12 @@ class ChartRenderer {
 
         // Draw each dataset
         datasets.forEach((dataset, datasetIndex) => {
-            // Default color: Deep Indigo
             const { values, color = '#1e1b4b', label = '' } = dataset;
             const pointSpacing = chartWidth / (values.length - 1 || 1);
 
             // Draw line
             this.ctx.strokeStyle = color;
-            this.ctx.lineWidth = 4; // Thicker lines
+            this.ctx.lineWidth = 3;
             this.ctx.lineJoin = 'miter';
             this.ctx.beginPath();
 
@@ -148,7 +146,7 @@ class ChartRenderer {
 
             this.ctx.stroke();
 
-            // Draw points (Square points for pixel theme)
+            // Draw points
             if (showPoints) {
                 values.forEach((value, index) => {
                     const x = padding + index * pointSpacing;
@@ -156,21 +154,21 @@ class ChartRenderer {
 
                     // Outer square
                     this.ctx.fillStyle = color;
-                    this.ctx.fillRect(Math.round(x - 6), Math.round(y - 6), 12, 12);
+                    this.ctx.fillRect(Math.round(x - 5), Math.round(y - 5), 10, 10);
 
                     // Border
-                    this.ctx.strokeStyle = '#1e1b4b';
+                    this.ctx.strokeStyle = '#fff';
                     this.ctx.lineWidth = 2;
-                    this.ctx.strokeRect(Math.round(x - 6), Math.round(y - 6), 12, 12);
+                    this.ctx.strokeRect(Math.round(x - 5), Math.round(y - 5), 10, 10);
                 });
             }
 
-            // Draw labels
+            // Draw labels - CLEAN FONT
             if (datasetIndex === 0) {
                 labels.forEach((label, index) => {
                     const x = padding + index * pointSpacing;
                     this.ctx.fillStyle = '#1e1b4b';
-                    this.ctx.font = '8px "Press Start 2P"';
+                    this.ctx.font = '500 10px Inter';
                     this.ctx.textAlign = 'center';
                     this.ctx.fillText(label, x, this.height - padding + 20);
                 });
@@ -178,9 +176,9 @@ class ChartRenderer {
         });
     }
 
-    // Helper: Lighten color (Simplified for pixel art, maybe reuse or remove if not needed)
+    // Helper: Lighten color
     lightenColor(color, percent) {
-        return color; // No gradients needed
+        return color;
     }
 }
 
