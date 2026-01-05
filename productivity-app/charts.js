@@ -7,6 +7,8 @@ class ChartRenderer {
         this.canvas = document.getElementById(canvasId);
         if (!this.canvas) return;
         this.ctx = this.canvas.getContext('2d');
+        // Disable anti-aliasing for pixel look
+        this.ctx.imageSmoothingEnabled = false;
         this.setupCanvas();
     }
 
@@ -30,7 +32,7 @@ class ChartRenderer {
         const {
             labels = [],
             values = [],
-            colors = ['#6366f1', '#8b5cf6', '#14b8a6', '#10b981', '#f59e0b', '#ef4444', '#ec4899'],
+            colors = ['#6d28d9', '#059669', '#d97706', '#dc2626', '#db2777'],
             showGrid = true,
             showValues = true
         } = options;
@@ -43,13 +45,13 @@ class ChartRenderer {
 
         // Draw grid
         if (showGrid) {
-            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-            this.ctx.lineWidth = 1;
+            this.ctx.strokeStyle = '#e5e7eb';
+            this.ctx.lineWidth = 2; // Thicker grid lines
             for (let i = 0; i <= 5; i++) {
                 const y = padding + (chartHeight / 5) * i;
                 this.ctx.beginPath();
-                this.ctx.moveTo(padding, y);
-                this.ctx.lineTo(this.width - padding, y);
+                this.ctx.moveTo(padding, Math.round(y));
+                this.ctx.lineTo(this.width - padding, Math.round(y));
                 this.ctx.stroke();
             }
         }
@@ -61,28 +63,29 @@ class ChartRenderer {
             const y = this.height - padding - barHeight;
             const width = barWidth * 0.6;
 
-            // Create gradient
-            const gradient = this.ctx.createLinearGradient(x, y + barHeight, x, y);
-            gradient.addColorStop(0, colors[index % colors.length]);
-            gradient.addColorStop(1, this.lightenColor(colors[index % colors.length], 20));
-
-            // Draw bar with animation effect
-            this.ctx.fillStyle = gradient;
+            // Draw bar (Solid color, no gradient)
+            this.ctx.fillStyle = colors[index % colors.length];
             this.ctx.beginPath();
-            this.ctx.roundRect(x, y, width, barHeight, 8);
+            // Regular rect instead of roundRect
+            this.ctx.rect(Math.round(x), Math.round(y), Math.round(width), Math.round(barHeight));
             this.ctx.fill();
+
+            // Add border to bars
+            this.ctx.strokeStyle = '#000';
+            this.ctx.lineWidth = 2;
+            this.ctx.stroke();
 
             // Draw value on top
             if (showValues && value > 0) {
-                this.ctx.fillStyle = '#f1f5f9';
-                this.ctx.font = 'bold 12px Inter';
+                this.ctx.fillStyle = '#000';
+                this.ctx.font = '10px "Press Start 2P"';
                 this.ctx.textAlign = 'center';
-                this.ctx.fillText(value, x + width / 2, y - 5);
+                this.ctx.fillText(value, x + width / 2, y - 10);
             }
 
             // Draw label
-            this.ctx.fillStyle = '#cbd5e1';
-            this.ctx.font = '11px Inter';
+            this.ctx.fillStyle = '#000';
+            this.ctx.font = '8px "Press Start 2P"';
             this.ctx.textAlign = 'center';
             this.ctx.fillText(labels[index] || '', x + width / 2, this.height - padding + 20);
         });
@@ -108,25 +111,26 @@ class ChartRenderer {
 
         // Draw grid
         if (showGrid) {
-            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-            this.ctx.lineWidth = 1;
+            this.ctx.strokeStyle = '#e5e7eb';
+            this.ctx.lineWidth = 2;
             for (let i = 0; i <= 5; i++) {
                 const y = padding + (chartHeight / 5) * i;
                 this.ctx.beginPath();
-                this.ctx.moveTo(padding, y);
-                this.ctx.lineTo(this.width - padding, y);
+                this.ctx.moveTo(padding, Math.round(y));
+                this.ctx.lineTo(this.width - padding, Math.round(y));
                 this.ctx.stroke();
             }
         }
 
         // Draw each dataset
         datasets.forEach((dataset, datasetIndex) => {
-            const { values, color = '#6366f1', label = '' } = dataset;
+            const { values, color = '#6d28d9', label = '' } = dataset;
             const pointSpacing = chartWidth / (values.length - 1 || 1);
 
             // Draw line
             this.ctx.strokeStyle = color;
-            this.ctx.lineWidth = 3;
+            this.ctx.lineWidth = 4; // Thicker lines
+            this.ctx.lineJoin = 'miter';
             this.ctx.beginPath();
 
             values.forEach((value, index) => {
@@ -134,31 +138,28 @@ class ChartRenderer {
                 const y = this.height - padding - (value / maxValue) * chartHeight;
 
                 if (index === 0) {
-                    this.ctx.moveTo(x, y);
+                    this.ctx.moveTo(Math.round(x), Math.round(y));
                 } else {
-                    this.ctx.lineTo(x, y);
+                    this.ctx.lineTo(Math.round(x), Math.round(y));
                 }
             });
 
             this.ctx.stroke();
 
-            // Draw points
+            // Draw points (Square points for pixel theme)
             if (showPoints) {
                 values.forEach((value, index) => {
                     const x = padding + index * pointSpacing;
                     const y = this.height - padding - (value / maxValue) * chartHeight;
 
-                    // Outer circle
+                    // Outer square
                     this.ctx.fillStyle = color;
-                    this.ctx.beginPath();
-                    this.ctx.arc(x, y, 5, 0, Math.PI * 2);
-                    this.ctx.fill();
+                    this.ctx.fillRect(Math.round(x - 6), Math.round(y - 6), 12, 12);
 
-                    // Inner circle
-                    this.ctx.fillStyle = '#1e293b';
-                    this.ctx.beginPath();
-                    this.ctx.arc(x, y, 3, 0, Math.PI * 2);
-                    this.ctx.fill();
+                    // Border
+                    this.ctx.strokeStyle = '#000';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.strokeRect(Math.round(x - 6), Math.round(y - 6), 12, 12);
                 });
             }
 
@@ -166,8 +167,8 @@ class ChartRenderer {
             if (datasetIndex === 0) {
                 labels.forEach((label, index) => {
                     const x = padding + index * pointSpacing;
-                    this.ctx.fillStyle = '#cbd5e1';
-                    this.ctx.font = '11px Inter';
+                    this.ctx.fillStyle = '#000';
+                    this.ctx.font = '8px "Press Start 2P"';
                     this.ctx.textAlign = 'center';
                     this.ctx.fillText(label, x, this.height - padding + 20);
                 });
@@ -175,91 +176,10 @@ class ChartRenderer {
         });
     }
 
-    // Draw Donut Chart
-    drawDonutChart(options = {}) {
-        this.clear();
-        const {
-            values = [],
-            labels = [],
-            colors = ['#6366f1', '#8b5cf6', '#14b8a6', '#10b981', '#f59e0b', '#ef4444'],
-            showLabels = true,
-            innerRadius = 0.6
-        } = options;
-
-        const centerX = this.width / 2;
-        const centerY = this.height / 2;
-        const radius = Math.min(centerX, centerY) - 40;
-        const total = values.reduce((sum, val) => sum + val, 0);
-
-        let currentAngle = -Math.PI / 2;
-
-        values.forEach((value, index) => {
-            const sliceAngle = (value / total) * Math.PI * 2;
-            const endAngle = currentAngle + sliceAngle;
-
-            // Draw slice
-            this.ctx.fillStyle = colors[index % colors.length];
-            this.ctx.beginPath();
-            this.ctx.arc(centerX, centerY, radius, currentAngle, endAngle);
-            this.ctx.arc(centerX, centerY, radius * innerRadius, endAngle, currentAngle, true);
-            this.ctx.closePath();
-            this.ctx.fill();
-
-            // Draw label
-            if (showLabels && value > 0) {
-                const labelAngle = currentAngle + sliceAngle / 2;
-                const labelRadius = radius * 0.8;
-                const labelX = centerX + Math.cos(labelAngle) * labelRadius;
-                const labelY = centerY + Math.sin(labelAngle) * labelRadius;
-
-                this.ctx.fillStyle = '#ffffff';
-                this.ctx.font = 'bold 12px Inter';
-                this.ctx.textAlign = 'center';
-                this.ctx.textBaseline = 'middle';
-                this.ctx.fillText(`${Math.round((value / total) * 100)}%`, labelX, labelY);
-            }
-
-            currentAngle = endAngle;
-        });
-
-        // Draw center circle
-        this.ctx.fillStyle = '#1e293b';
-        this.ctx.beginPath();
-        this.ctx.arc(centerX, centerY, radius * innerRadius, 0, Math.PI * 2);
-        this.ctx.fill();
-    }
-
-    // Helper: Lighten color
+    // Helper: Lighten color (Simplified for pixel art, maybe reuse or remove if not needed)
     lightenColor(color, percent) {
-        const num = parseInt(color.replace('#', ''), 16);
-        const amt = Math.round(2.55 * percent);
-        const R = (num >> 16) + amt;
-        const G = (num >> 8 & 0x00FF) + amt;
-        const B = (num & 0x0000FF) + amt;
-        return '#' + (
-            0x1000000 +
-            (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
-            (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
-            (B < 255 ? (B < 1 ? 0 : B) : 255)
-        ).toString(16).slice(1);
+        return color; // No gradients needed
     }
 }
 
-// Polyfill for roundRect if not available
-if (!CanvasRenderingContext2D.prototype.roundRect) {
-    CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius) {
-        this.moveTo(x + radius, y);
-        this.lineTo(x + width - radius, y);
-        this.quadraticCurveTo(x + width, y, x + width, y + radius);
-        this.lineTo(x + width, y + height - radius);
-        this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-        this.lineTo(x + radius, y + height);
-        this.quadraticCurveTo(x, y + height, x, y + height - radius);
-        this.lineTo(x, y + radius);
-        this.quadraticCurveTo(x, y, x + radius, y);
-        this.closePath();
-    };
-}
-
-// Export for use in app.js
 window.ChartRenderer = ChartRenderer;

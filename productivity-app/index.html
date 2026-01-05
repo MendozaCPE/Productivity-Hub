@@ -9,34 +9,16 @@
     <title>Productivity Hub - Your Ultimate Productivity Companion</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <!-- SVG Gradients -->
-    <svg width="0" height="0" style="position: absolute;">
-        <defs>
-            <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
-                <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
-            </linearGradient>
-            <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:1" />
-                <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
-            </linearGradient>
-        </defs>
-    </svg>
+    <!-- SVG Gradients (Removed as not needed for pixel theme) -->
 
     <!-- Background Effects -->
-    <div class="bg-gradient"></div>
-    <div class="bg-orbs">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-    </div>
+    <div class="bg-grid"></div>
+    <!-- Removed orbs for pixel theme -->
 
     <!-- Main Container -->
     <div class="container">
@@ -53,7 +35,7 @@
                     <span class="nav-label">Dashboard</span>
                 </button>
                 <button class="nav-item" data-tab="pomodoro">
-                    <span class="nav-icon">🍅</span>
+                    <span class="nav-icon">☕</span>
                     <span class="nav-label">Pomodoro</span>
                 </button>
                 <button class="nav-item" data-tab="habits">
@@ -102,10 +84,10 @@
                 <div class="dashboard-grid">
                     <!-- Quick Stats -->
                     <div class="stat-card">
-                        <div class="stat-icon">🍅</div>
+                        <div class="stat-icon">☕</div>
                         <div class="stat-content">
                             <div class="stat-value" id="todayPomodoros">0</div>
-                            <div class="stat-label">Pomodoros Today</div>
+                            <div class="stat-label">Coffees Today</div>
                         </div>
                     </div>
 
@@ -164,24 +146,37 @@
                 <header class="page-header">
                     <div>
                         <h2 class="page-title">Pomodoro Timer</h2>
-                        <p class="page-subtitle">Stay focused with the Pomodoro technique</p>
+                        <p class="page-subtitle">Brew your productivity!</p>
                     </div>
                 </header>
 
                 <div class="pomodoro-container">
                     <div class="pomodoro-card">
                         <div class="timer-mode-selector">
-                            <button class="mode-btn active" data-mode="work">Work</button>
-                            <button class="mode-btn" data-mode="short">Short Break</button>
-                            <button class="mode-btn" data-mode="long">Long Break</button>
+                            <button class="mode-btn active" data-mode="work">Brew (25m)</button>
+                            <button class="mode-btn" data-mode="short">Sip (5m)</button>
+                            <button class="mode-btn" data-mode="long">Refill (15m)</button>
                         </div>
 
-                        <div class="timer-display">
-                            <svg class="timer-ring" viewBox="0 0 300 300">
-                                <circle class="timer-ring-bg" cx="150" cy="150" r="130"></circle>
-                                <circle class="timer-ring-progress" cx="150" cy="150" r="130"></circle>
-                            </svg>
-                            <div class="timer-content">
+                        <div class="timer-display-container">
+                            <!-- Coffee Cup Animation -->
+                            <div class="coffee-cup-container">
+                                <div class="steam-container">
+                                    <div class="steam steam-1"></div>
+                                    <div class="steam steam-2"></div>
+                                    <div class="steam steam-3"></div>
+                                </div>
+                                <div class="coffee-cup">
+                                    <div class="coffee-rim"></div>
+                                    <div class="coffee-liquid-container">
+                                        <div class="coffee-liquid" id="coffeeLiquid"></div>
+                                    </div>
+                                    <div class="cup-handle"></div>
+                                </div>
+                                <div class="cup-plate"></div>
+                            </div>
+
+                            <div class="timer-content-text">
                                 <div class="timer-time" id="timerDisplay">25:00</div>
                                 <div class="timer-label" id="timerLabel">Focus Time</div>
                             </div>

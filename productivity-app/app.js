@@ -392,7 +392,7 @@ function updateTimerDisplay() {
 
     document.getElementById('timerDisplay').textContent = display;
 
-    // Update ring progress
+    // Update Coffee Cup Progress
     const durations = {
         work: state.pomodoro.workDuration * 60,
         short: state.pomodoro.shortBreakDuration * 60,
@@ -400,13 +400,15 @@ function updateTimerDisplay() {
     };
 
     const totalTime = durations[state.pomodoro.mode];
-    const progress = (totalTime - state.pomodoro.timeLeft) / totalTime;
-    const circumference = 2 * Math.PI * 130;
-    const offset = circumference * (1 - progress);
+    // Calculate percentage (0% at start, 100% at end)
+    // The liquid should RISE as time PASSES.
+    // timeLeft goes DOWN (total -> 0), so (total - timeLeft) goes UP (0 -> total)
+    const timePassed = totalTime - state.pomodoro.timeLeft;
+    const percentage = Math.min(100, Math.max(0, (timePassed / totalTime) * 100));
 
-    const ring = document.querySelector('.timer-ring-progress');
-    if (ring) {
-        ring.style.strokeDashoffset = offset;
+    const liquid = document.getElementById('coffeeLiquid');
+    if (liquid) {
+        liquid.style.height = `${percentage}%`;
     }
 }
 
