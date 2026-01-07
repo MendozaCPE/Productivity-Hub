@@ -33,7 +33,7 @@ class ChartRenderer {
             labels = [],
             values = [],
             // Palette: Hot Pink, Soft Periwinkle, Vivid Fuchsia, Rose, Deep Indigo
-            colors = ['#ec4899', '#c7d2fe', '#d946ef', '#f43f5e', '#1e1b4b'],
+            colors = ['#ffffff', '#e5e5e5', '#d4d4d4', '#a3a3a3', '#737373'],
             showGrid = true,
             showValues = true
         } = options;
@@ -46,7 +46,7 @@ class ChartRenderer {
 
         // Draw grid
         if (showGrid) {
-            this.ctx.strokeStyle = '#eee'; // Lighter grid
+            this.ctx.strokeStyle = '#262626'; // Darker grid for dark theme
             this.ctx.lineWidth = 1;
             for (let i = 0; i <= 5; i++) {
                 const y = padding + (chartHeight / 5) * i;
@@ -70,22 +70,22 @@ class ChartRenderer {
             this.ctx.rect(Math.round(x), Math.round(y), Math.round(width), Math.round(barHeight));
             this.ctx.fill();
 
-            // Add border (Deep Indigo)
-            this.ctx.strokeStyle = '#1e1b4b';
-            this.ctx.lineWidth = 2;
+            // Add border
+            this.ctx.strokeStyle = '#404040';
+            this.ctx.lineWidth = 1;
             this.ctx.stroke();
 
             // Draw value on top - CLEAN FONT
             if (showValues && value > 0) {
-                this.ctx.fillStyle = '#1e1b4b';
+                this.ctx.fillStyle = '#ffffff';
                 this.ctx.font = 'bold 11px Inter';
                 this.ctx.textAlign = 'center';
                 this.ctx.fillText(value, x + width / 2, y - 8);
             }
 
-            // Draw label - CLEAN FONT
-            this.ctx.fillStyle = '#1e1b4b';
-            this.ctx.font = '600 10px Inter'; // Semi-bold for legibility
+            // Draw label
+            this.ctx.fillStyle = '#a3a3a3';
+            this.ctx.font = '500 10px Inter';
             this.ctx.textAlign = 'center';
             this.ctx.fillText(labels[index] || '', x + width / 2, this.height - padding + 20);
         });
@@ -111,7 +111,7 @@ class ChartRenderer {
 
         // Draw grid
         if (showGrid) {
-            this.ctx.strokeStyle = '#eee';
+            this.ctx.strokeStyle = '#262626';
             this.ctx.lineWidth = 1;
             for (let i = 0; i <= 5; i++) {
                 const y = padding + (chartHeight / 5) * i;
@@ -124,7 +124,7 @@ class ChartRenderer {
 
         // Draw each dataset
         datasets.forEach((dataset, datasetIndex) => {
-            const { values, color = '#1e1b4b', label = '' } = dataset;
+            const { values, color = '#ffffff', label = '' } = dataset;
             const pointSpacing = chartWidth / (values.length - 1 || 1);
 
             // Draw line
@@ -167,7 +167,7 @@ class ChartRenderer {
             if (datasetIndex === 0) {
                 labels.forEach((label, index) => {
                     const x = padding + index * pointSpacing;
-                    this.ctx.fillStyle = '#1e1b4b';
+                    this.ctx.fillStyle = '#a3a3a3';
                     this.ctx.font = '500 10px Inter';
                     this.ctx.textAlign = 'center';
                     this.ctx.fillText(label, x, this.height - padding + 20);

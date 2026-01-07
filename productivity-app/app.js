@@ -19,33 +19,54 @@ const state = {
     tasks: [],
     goals: [],
     focusSessions: [],
-    selectedHabitColor: '#6366f1'
+    selectedHabitColor: '#ffffff'
 };
 
-// Load state from localStorage
-function loadState() {
-    const saved = localStorage.getItem('productivityHubState');
-    if (saved) {
-        const parsed = JSON.parse(saved);
-        Object.assign(state, parsed);
-        // Reset timer state
-        state.pomodoro.isRunning = false;
+// Load state from backend
+async function loadState() {
+    try {
+        const response = await fetch('backend/api.php?action=get_data');
+        const data = await response.json();
+        if (data && !data.error) {
+            Object.assign(state, data);
+            // Reset timer state
+            state.pomodoro.isRunning = false;
+        }
+    } catch (error) {
+        console.error("Failed to load state from backend:", error);
+        // Fallback to localStorage if backend fails
+        const saved = localStorage.getItem('productivityHubState');
+        if (saved) {
+            Object.assign(state, JSON.parse(saved));
+        }
     }
 }
 
-// Save state to localStorage
-function saveState() {
+// Save state to backend
+async function saveState() {
     const toSave = { ...state };
     toSave.pomodoro.isRunning = false;
+
+    // Save to localStorage as backup
     localStorage.setItem('productivityHubState', JSON.stringify(toSave));
+
+    try {
+        await fetch('backend/api.php?action=sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(toSave)
+        });
+    } catch (error) {
+        console.error("Failed to sync state with backend:", error);
+    }
 }
 
 // ===================================
 // INITIALIZATION
 // ===================================
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadState();
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadState();
     initializeNavigation();
     initializeDashboard();
     initializePomodoro();
@@ -392,23 +413,14 @@ function updateTimerDisplay() {
 
     document.getElementById('timerDisplay').textContent = display;
 
-    // Update Coffee Cup Progress
-    const durations = {
-        work: state.pomodoro.workDuration * 60,
-        short: state.pomodoro.shortBreakDuration * 60,
-        long: state.pomodoro.longBreakDuration * 60
-    };
-
-    const totalTime = durations[state.pomodoro.mode];
-    // Calculate percentage (0% at start, 100% at end)
-    // The liquid should RISE as time PASSES.
-    // timeLeft goes DOWN (total -> 0), so (total - timeLeft) goes UP (0 -> total)
-    const timePassed = totalTime - state.pomodoro.timeLeft;
-    const percentage = Math.min(100, Math.max(0, (timePassed / totalTime) * 100));
-
-    const liquid = document.getElementById('coffeeLiquid');
-    if (liquid) {
-        liquid.style.height = `${percentage}%`;
+    // Update Professional Progress Ring
+    const ring = document.getElementById('pomoRingFill');
+    if (ring) {
+        const totalTime = durations[state.pomodoro.mode];
+        const timeElapsed = totalTime - state.pomodoro.timeLeft;
+        const dashArray = 565.48; // 2 * PI * 90
+        const offset = dashArray - (timeElapsed / totalTime) * dashArray;
+        ring.style.strokeDashoffset = offset;
     }
 }
 
@@ -603,7 +615,7 @@ function updateHabitCharts() {
     weeklyChart.drawBarChart({
         labels: weekLabels,
         values: weekValues,
-        colors: ['#6366f1', '#8b5cf6', '#14b8a6', '#10b981', '#f59e0b', '#ef4444', '#ec4899']
+        colors: ['#ffffff', '#e5e5e5', '#d4d4d4', '#a3a3a3', '#737373', '#525252', '#404040']
     });
 
     // Monthly chart
@@ -627,7 +639,7 @@ function updateHabitCharts() {
         labels: monthLabels.filter((_, i) => i % 5 === 0),
         datasets: [{
             values: monthValues,
-            color: '#14b8a6',
+            color: '#ffffff',
             label: 'Completion %'
         }]
     });
