@@ -67,41 +67,64 @@ switch ($action) {
             $state = json_decode($json, true);
 
             if (!$state) {
-                echo json_encode(["error" => "Invalid data"]);
+                echo json_encode(["error" => "Invalid JSON data"]);
                 exit;
             }
 
-            // Sync Tasks
-            $conn->query("DELETE FROM tasks");
-            $stmt = $conn->prepare("INSERT INTO tasks (id, text, priority, completed) VALUES (?, ?, ?, ?)");
-            foreach ($state['tasks'] as $t) {
-                $stmt->bind_param("issi", $t['id'], $t['text'], $t['priority'], $t['completed']);
-                $stmt->execute();
+            // Start transaction
+            $conn->begin_transaction();
+
+            try {
+                // Sync Tasks
+                if (isset($state['tasks']) && is_array($state['tasks'])) {
+                    $conn->query("DELETE FROM tasks");
+                    $stmt = $conn->prepare("INSERT INTO tasks (id, text, priority, completed) VALUES (?, ?, ?, ?)");
+                    foreach ($state['tasks'] as $t) {
+                        $completed = $t['completed'] ? 1 : 0;
+                        $stmt->bind_param("sssi", $t['id'], $t['text'], $t['priority'], $completed);
+                        $stmt->execute();
+                    }
+                }
+
+                // Sync Habits
+                if (isset($state['habits']) && is_array($state['habits'])) {
+                    $conn->query("DELETE FROM habits");
+                    $stmt = $conn->prepare("INSERT INTO habits (id, name, color, completed_dates) VALUES (?, ?, ?, ?)");
+                    foreach ($state['habits'] as $h) {
+                        $dates = json_encode($h['completedDates'] ?? []);
+                        $stmt->bind_param("isss", $h['id'], $h['name'], $h['color'], $dates);
+                        $stmt->execute();
+                    }
+                }
+
+                // Sync Goals
+                if (isset($state['goals']) && is_array($state['goals'])) {
+                    $conn->query("DELETE FROM goals");
+                    $stmt = $conn->prepare("INSERT INTO goals (id, text, completed) VALUES (?, ?, ?)");
+                    foreach ($state['goals'] as $g) {
+                        $completed = $g['completed'] ? 1 : 0;
+                        $stmt->bind_param("ssi", $g['id'], $g['text'], $completed);
+                        $stmt->execute();
+                    }
+                }
+
+                // Sync Pomodoro
+                if (isset($state['pomodoro'])) {
+                    $stmt = $conn->prepare("UPDATE pomodoro_stats SET sessions_completed = ?, total_focus_time = ? WHERE id = 1");
+                    $sessions = (int)($state['pomodoro']['sessionsCompleted'] ?? 0);
+                    $focus = (int)($state['pomodoro']['totalFocusTime'] ?? 0);
+                    $stmt->bind_param("ii", $sessions, $focus);
+                    $stmt->execute();
+                }
+
+                $conn->commit();
+                echo json_encode(["status" => "success"]);
+            } catch (Exception $e) {
+                $conn->rollback();
+                echo json_encode(["error" => $e->getMessage()]);
             }
-
-            // Sync Habits
-            $conn->query("DELETE FROM habits");
-            $stmt = $conn->prepare("INSERT INTO habits (id, name, color, completed_dates) VALUES (?, ?, ?, ?)");
-            foreach ($state['habits'] as $h) {
-                $dates = json_encode($h['completedDates']);
-                $stmt->bind_param("isss", $h['id'], $h['name'], $h['color'], $dates);
-                $stmt->execute();
-            }
-
-            // Sync Goals
-            $conn->query("DELETE FROM goals");
-            $stmt = $conn->prepare("INSERT INTO goals (id, text, completed) VALUES (?, ?, ?)");
-            foreach ($state['goals'] as $g) {
-                $stmt->bind_param("isi", $g['id'], $g['text'], $g['completed']);
-                $stmt->execute();
-            }
-
-            // Sync Pomodoro
-            $stmt = $conn->prepare("UPDATE pomodoro_stats SET sessions_completed = ?, total_focus_time = ? WHERE id = 1");
-            $stmt->bind_param("ii", $state['pomodoro']['sessionsCompleted'], $state['pomodoro']['totalFocusTime']);
-            $stmt->execute();
-
-            echo json_encode(["status" => "success"]);
+        } else {
+            echo json_encode(["error" => "Method not allowed"]);
         }
         break;
 

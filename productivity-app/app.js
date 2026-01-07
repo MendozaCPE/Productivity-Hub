@@ -28,9 +28,16 @@ async function loadState() {
         const response = await fetch('backend/api.php?action=get_data');
         const data = await response.json();
         if (data && !data.error) {
+            // Deep merge or at least merge pomodoro sub-object
+            if (data.pomodoro) {
+                Object.assign(state.pomodoro, data.pomodoro);
+                delete data.pomodoro;
+            }
             Object.assign(state, data);
+
             // Reset timer state
             state.pomodoro.isRunning = false;
+            state.pomodoro.timeLeft = (state.pomodoro.workDuration || 25) * 60;
         }
     } catch (error) {
         console.error("Failed to load state from backend:", error);
@@ -416,6 +423,11 @@ function updateTimerDisplay() {
     // Update Professional Progress Ring
     const ring = document.getElementById('pomoRingFill');
     if (ring) {
+        const durations = {
+            work: state.pomodoro.workDuration * 60,
+            short: state.pomodoro.shortBreakDuration * 60,
+            long: state.pomodoro.longBreakDuration * 60
+        };
         const totalTime = durations[state.pomodoro.mode];
         const timeElapsed = totalTime - state.pomodoro.timeLeft;
         const dashArray = 565.48; // 2 * PI * 90
