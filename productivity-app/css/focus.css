@@ -30,17 +30,20 @@
 }
 
 .focus-task-input input {
-    width: 400px;
+    width: 100%;
+    max-width: 500px;
     text-align: center;
-    font-size: 1.25rem;
-    padding: 0.5rem;
+    font-size: 1.5rem;
+    padding: 1rem;
     background: transparent;
     border: none;
-    border-bottom: 1px solid var(--border-color);
-    color: white;
+    border-bottom: 2px solid var(--border-color);
+    color: var(--text-primary);
+    font-family: var(--font-heading);
+    transition: all 0.3s;
 }
 
 .focus-task-input input:focus {
     outline: none;
-    border-color: white;
+    border-color: var(--accent);
 }

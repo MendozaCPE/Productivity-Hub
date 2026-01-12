@@ -4,19 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Pomodoro Timer">
-    <title>Productivity Hub - Pomodoro</title>
+    <title>Productivity Hub – Pomodoro</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700&display=swap"
         rel="stylesheet">
+
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/pomodoro.css">
 </head>
 
 <body>
+
     <div class="container">
-        <!-- Sidebar Navigation -->
+
+        <!-- ========== SIDEBAR ========== -->
         <aside class="sidebar">
             <div class="logo">
                 <div class="logo-icon">⚡</div>
@@ -24,115 +27,140 @@
             </div>
 
             <nav class="nav-menu">
-                <a href="dashboard.html" class="nav-item">
-                    <span class="nav-icon">📊</span>
-                    <span class="nav-label">Dashboard</span>
-                </a>
-                <a href="pomodoro.html" class="nav-item active">
-                    <span class="nav-icon">☕</span>
-                    <span class="nav-label">Pomodoro</span>
-                </a>
-                <a href="habits.html" class="nav-item">
-                    <span class="nav-icon">✨</span>
-                    <span class="nav-label">Habits</span>
-                </a>
-                <a href="tasks.html" class="nav-item">
-                    <span class="nav-icon">✓</span>
-                    <span class="nav-label">Tasks</span>
-                </a>
-                <a href="goals.html" class="nav-item">
-                    <span class="nav-icon">🎯</span>
-                    <span class="nav-label">Goals</span>
-                </a>
-                <a href="focus.html" class="nav-item">
-                    <span class="nav-icon">🧘</span>
-                    <span class="nav-label">Focus Mode</span>
-                </a>
+                <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+                <a href="pomodoro.html" class="nav-item active">☕ Pomodoro</a>
+                <a href="habits.html" class="nav-item">✨ Habits</a>
+                <a href="tasks.html" class="nav-item">✓ Tasks</a>
+                <a href="goals.html" class="nav-item">🎯 Goals</a>
+                <a href="focus.html" class="nav-item">🧘 Focus</a>
             </nav>
 
             <div class="sidebar-footer">
-                <div class="streak-badge">
-                    <div class="streak-icon">🔥</div>
-                    <div class="streak-info">
-                        <div class="streak-number" id="currentStreak">0</div>
-                        <div class="streak-label">Day Streak</div>
-                    </div>
+                <div class="streak-badge" style="background: transparent; border: none; padding: 0;">
+                    <span style="font-size: 1.2rem;">🔥</span>
+                    <span style="font-weight: 700; color: var(--text-primary);">Day Streak: <span
+                            id="currentStreak">0</span></span>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content Area -->
+        <!-- ========== MAIN ========== -->
         <main class="main-content" id="pomodoro">
             <header class="page-header">
                 <div>
                     <h2 class="page-title">Pomodoro Timer</h2>
-                    <p class="page-subtitle">Brew your productivity!</p>
+                    <p class="page-subtitle">Brew your productivity</p>
                 </div>
             </header>
 
             <div class="pomodoro-container">
                 <div class="pomodoro-card">
+
                     <div class="timer-mode-selector">
-                        <button class="mode-btn active" data-mode="work">Brew (25m)</button>
-                        <button class="mode-btn" data-mode="short">Sip (5m)</button>
-                        <button class="mode-btn" data-mode="long">Refill (15m)</button>
+                        <button class="mode-btn active" data-mode="work">Brew</button>
+                        <button class="mode-btn" data-mode="short">Sip</button>
+                        <button class="mode-btn" data-mode="long">Refill</button>
                     </div>
 
-                    <div class="timer-display-container">
-                        <div class="pomo-progress-container">
-                            <svg class="pomo-ring-svg" viewBox="0 0 200 200">
-                                <circle class="pomo-ring-bg" cx="100" cy="100" r="90"></circle>
-                                <circle class="pomo-ring-fill" id="pomoRingFill" cx="100" cy="100" r="90"
-                                    style="stroke-dasharray: 565.48; stroke-dashoffset: 565.48;"></circle>
-                            </svg>
-                            <div class="timer-content-text">
-                                <div class="timer-time" id="timerDisplay">25:00</div>
-                                <div class="timer-label" id="timerLabel">Focus Time</div>
+                    <div class="coffee-scene">
+                        <div class="coffee-cup" id="cup">
+                            <div class="coffee-liquid" id="coffee">
+                                <div class="coffee-surface"></div>
                             </div>
+                            <div class="steam">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+
+                        <div class="timer-content-text">
+                            <div class="timer-time" id="time">25:00</div>
+                            <div class="timer-label">Focus Time</div>
                         </div>
                     </div>
 
                     <div class="timer-controls">
-                        <button class="btn-timer btn-primary" id="startPauseBtn">
-                            <span id="startPauseText">Start</span>
-                        </button>
-                        <button class="btn-timer btn-secondary" id="resetBtn">Reset</button>
+                        <button class="btn-primary" id="start">Start</button>
+                        <button class="btn-secondary" id="reset">Reset</button>
                     </div>
 
-                    <div class="pomodoro-stats">
-                        <div class="pomo-stat">
-                            <div class="pomo-stat-value" id="sessionCount">0</div>
-                            <div class="pomo-stat-label">Sessions Today</div>
-                        </div>
-                        <div class="pomo-stat">
-                            <div class="pomo-stat-value" id="totalFocusTime">0m</div>
-                            <div class="pomo-stat-label">Total Focus</div>
-                        </div>
-                    </div>
-
-                    <div class="timer-settings">
-                        <h4>Timer Settings</h4>
-                        <div class="setting-row">
-                            <label>Work Duration (min)</label>
-                            <input type="number" id="workDuration" value="25" min="1" max="60">
-                        </div>
-                        <div class="setting-row">
-                            <label>Short Break (min)</label>
-                            <input type="number" id="shortBreakDuration" value="5" min="1" max="30">
-                        </div>
-                        <div class="setting-row">
-                            <label>Long Break (min)</label>
-                            <input type="number" id="longBreakDuration" value="15" min="1" max="60">
-                        </div>
-                    </div>
                 </div>
             </div>
         </main>
     </div>
 
     <!-- Scripts -->
-    <script src="charts.js"></script>
-    <script src="app.js"></script>
+    <script src="app.js"></script> <!-- Re-added: Needed for CRUD/Sidebar stats -->
+    <script>
+        // Custom Coffee Timer Logic (integrating with app.js fallback/sync would be ideal, 
+        // but for now keeping the user's visualisation logic effectively)
+
+        // Note: We need to ensure this doesn't conflict with app.js. 
+        // app.js looks for 'startPauseBtn' but here we have 'start'. 
+        // We will add bridge logic here to save stats.
+
+        const TOTAL = 25 * 60;
+        let remaining = TOTAL;
+        let running = false;
+        let last = null;
+
+        const coffee = document.getElementById("coffee");
+        const timeEl = document.getElementById("time");
+        const cup = document.getElementById("cup");
+
+        function format(t) {
+            const m = Math.floor(t / 60);
+            const s = Math.floor(t % 60);
+            return `${m}:${s.toString().padStart(2, "0")}`;
+        }
+
+        function animate(ts) {
+            if (!running) return;
+            if (!last) last = ts;
+            const delta = (ts - last) / 1000;
+            last = ts;
+
+            remaining = Math.max(0, remaining - delta);
+            const progress = 1 - remaining / TOTAL;
+
+            coffee.style.height = `${progress * 100}%`;
+            timeEl.textContent = format(remaining);
+
+            if (remaining <= 0) {
+                running = false;
+                cup.classList.add("complete");
+                // TRIGGER SAVE VIA GLOBAL API IF AVAILABLE
+                if (window.apiCall) {
+                    // Mocking session completion
+                    // In a real scenario we'd track sessions properly
+                    window.apiCall('update_pomodoro', {
+                        sessionsCompleted: (window.state?.pomodoro?.sessionsCompleted || 0) + 1,
+                        totalFocusTime: (window.state?.pomodoro?.totalFocusTime || 0) + 25
+                    });
+                    // Also refresh state
+                    if (window.loadState) window.loadState();
+                }
+            } else {
+                requestAnimationFrame(animate);
+            }
+        }
+
+        document.getElementById("start").onclick = () => {
+            if (!running) {
+                running = true;
+                last = null;
+                requestAnimationFrame(animate);
+            }
+        };
+
+        document.getElementById("reset").onclick = () => {
+            running = false;
+            remaining = TOTAL;
+            coffee.style.height = "0%";
+            timeEl.textContent = "25:00";
+            cup.classList.remove("complete");
+        };
+    </script>
+
 </body>
 
 </html>

@@ -351,13 +351,19 @@ function updatePomodoroStats() {
 // ===================================
 
 function initializeHabits() {
-    const addHabitBtn = document.getElementById('addHabitBtn');
-    if (!addHabitBtn) return;
+    // Check if we are on the habits page by checking for the container or unique element
+    if (!document.getElementById('habits')) return;
 
-    addHabitBtn.addEventListener('click', openHabitModal);
-    document.getElementById('closeHabitModal')?.addEventListener('click', closeHabitModal);
-    document.getElementById('cancelHabitBtn')?.addEventListener('click', closeHabitModal);
-    document.getElementById('saveHabitBtn')?.addEventListener('click', saveHabit);
+    const saveBtn = document.getElementById('saveHabitBtn');
+    if (saveBtn) saveBtn.addEventListener('click', saveHabit);
+
+    // Allow enter key in habit name input
+    const nameInput = document.getElementById('habitName');
+    if (nameInput) {
+        nameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') saveHabit();
+        });
+    }
 
     document.querySelectorAll('.color-option').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -367,35 +373,36 @@ function initializeHabits() {
         });
     });
 
+    // Default selection
+    state.selectedHabitColor = '#6366f1';
+
     renderHabits();
     updateHabitCharts();
 }
 
-function openHabitModal() {
-    document.getElementById('habitModal').classList.add('active');
-    document.getElementById('habitName').value = '';
-    document.querySelectorAll('.color-option')[0]?.click();
-}
-
-function closeHabitModal() {
-    document.getElementById('habitModal').classList.remove('active');
-}
+// Modal functions removed
 
 async function saveHabit() {
-    const name = document.getElementById('habitName').value.trim();
+    const nameInput = document.getElementById('habitName');
+    const name = nameInput.value.trim();
     if (!name) return;
 
     const habit = {
         id: Date.now(),
         name,
-        color: state.selectedHabitColor,
+        color: state.selectedHabitColor || '#6366f1',
         completedDates: []
     };
 
     state.habits.push(habit);
     renderHabits();
     updateHabitCharts();
-    closeHabitModal();
+
+    // Clear input
+    nameInput.value = '';
+    // Reset color to first one
+    const firstColor = document.querySelector('.color-option');
+    if (firstColor) firstColor.click();
 
     await apiCall('add_habit', habit);
 }
