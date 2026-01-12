@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Habit Tracker">
+    <title>Productivity Hub - Habits</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/habits.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">⚡</div>
+                <h1>ProductivityHub</h1>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a href="pomodoro.html" class="nav-item">
+                    <span class="nav-icon">☕</span>
+                    <span class="nav-label">Pomodoro</span>
+                </a>
+                <a href="habits.html" class="nav-item active">
+                    <span class="nav-icon">✨</span>
+                    <span class="nav-label">Habits</span>
+                </a>
+                <a href="tasks.html" class="nav-item">
+                    <span class="nav-icon">✓</span>
+                    <span class="nav-label">Tasks</span>
+                </a>
+                <a href="goals.html" class="nav-item">
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-label">Goals</span>
+                </a>
+                <a href="focus.html" class="nav-item">
+                    <span class="nav-icon">🧘</span>
+                    <span class="nav-label">Focus Mode</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="streak-badge">
+                    <div class="streak-icon">🔥</div>
+                    <div class="streak-info">
+                        <div class="streak-number" id="currentStreak">0</div>
+                        <div class="streak-label">Day Streak</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content" id="habits">
+            <header class="page-header">
+                <div>
+                    <h2 class="page-title">Habit Tracker</h2>
+                    <p class="page-subtitle">Build better habits, one day at a time</p>
+                </div>
+                <button class="btn-primary" id="addHabitBtn">+ Add Habit</button>
+            </header>
+
+            <div class="habits-grid">
+                <div class="card habits-list-card">
+                    <h3 class="card-title">My Habits</h3>
+                    <div id="habitsList" class="habits-list"></div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Weekly Progress</h3>
+                    <canvas id="habitsWeeklyChart"></canvas>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Monthly Trends</h3>
+                    <canvas id="habitsMonthlyChart"></canvas>
+                </div>
+
+                <div class="card habits-stats">
+                    <h3 class="card-title">Statistics</h3>
+                    <div class="habit-stat-item">
+                        <span class="habit-stat-label">Total Habits</span>
+                        <span class="habit-stat-value" id="totalHabits">0</span>
+                    </div>
+                    <div class="habit-stat-item">
+                        <span class="habit-stat-label">Completion Rate</span>
+                        <span class="habit-stat-value" id="habitCompletionRate">0%</span>
+                    </div>
+                    <div class="habit-stat-item">
+                        <span class="habit-stat-label">Best Streak</span>
+                        <span class="habit-stat-value" id="bestStreak">0 days</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Habit Modal -->
+    <div id="habitModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Habit</h3>
+                <button class="modal-close" id="closeHabitModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Habit Name</label>
+                    <input type="text" id="habitName" placeholder="e.g., Morning Exercise" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-picker">
+                        <button class="color-option" data-color="#6366f1" style="background: #6366f1;"></button>
+                        <button class="color-option" data-color="#14b8a6" style="background: #14b8a6;"></button>
+                        <button class="color-option" data-color="#10b981" style="background: #10b981;"></button>
+                        <button class="color-option" data-color="#f59e0b" style="background: #f59e0b;"></button>
+                        <button class="color-option" data-color="#ef4444" style="background: #ef4444;"></button>
+                        <button class="color-option" data-color="#ec4899" style="background: #ec4899;"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelHabitBtn">Cancel</button>
+                <button class="btn-primary" id="saveHabitBtn">Save Habit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <div id="confetti"></div>
+
+    <!-- Scripts -->
+    <script src="charts.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+/* === GOALS === */
+.goals-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-lg);
+}
+
+.quote-card {
+    grid-column: span 2;
+    text-align: center;
+    font-style: italic;
+}
+
+.quote {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.quote-author {
+    color: var(--text-secondary);
+}
+
+.goals-input-card {
+    grid-column: span 1;
+}
+
+.goal-input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.goal-input {
+    flex: 1;
+    padding: 0.75rem;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: white;
+    border-radius: 4px;
+}
+
+.goal-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+}
+
+.goal-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--border-color);
+    margin-right: 1rem;
+    cursor: pointer;
+}
+
+.goal-item.completed .goal-checkbox {
+    background: white;
+}
+
+.goal-item.completed .goal-text {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.goals-progress-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ring {
+    width: 160px;
+    height: 160px;
+    transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+    fill: none;
+    stroke: #262626;
+    stroke-width: 8;
+}
+
+.progress-ring-fill {
+    fill: none;
+    stroke: white;
+    stroke-width: 8;
+    stroke-dasharray: 502;
+    stroke-dashoffset: 502;
+    transition: stroke-dashoffset 0.5s;
+}
+
+.progress-text {
+    position: absolute;
+    text-align: center;
+}
+
+.progress-percentage {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.progress-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}

@@ -1,0 +1,46 @@
+/* === FOCUS MODE === */
+.focus-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 70vh;
+    justify-content: center;
+}
+
+.focus-main {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.focus-time {
+    font-family: var(--font-heading);
+    font-size: 6rem;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.focus-label {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.focus-controls {
+    margin-bottom: 2rem;
+}
+
+.focus-task-input input {
+    width: 400px;
+    text-align: center;
+    font-size: 1.25rem;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    color: white;
+}
+
+.focus-task-input input:focus {
+    outline: none;
+    border-color: white;
+}

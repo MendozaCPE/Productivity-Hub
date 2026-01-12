@@ -1,0 +1,159 @@
+/* === POMODORO === */
+:root {
+    --pomo-work: #ffffff;
+    --pomo-break: #404040;
+}
+
+.pomodoro-container {
+    display: flex;
+    justify-content: center;
+    padding: var(--spacing-xl) 0;
+}
+
+.pomodoro-card {
+    background: var(--surface-dark);
+    border: 1px solid var(--border-color);
+    padding: var(--spacing-xl);
+    max-width: 500px;
+    width: 100%;
+    border-radius: 12px;
+}
+
+.timer-mode-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: var(--spacing-xl);
+    justify-content: center;
+}
+
+.mode-btn {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.mode-btn.active {
+    background: var(--surface-light);
+    color: var(--text-inverted);
+    border-color: var(--surface-light);
+}
+
+.timer-display-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+/* Professional Timer Progress Ring */
+.pomo-progress-container {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    margin: var(--spacing-xl) 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pomo-ring-svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.pomo-ring-bg {
+    fill: none;
+    stroke: #1a1a1a;
+    stroke-width: 6;
+}
+
+.pomo-ring-fill {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+.timer-content-text {
+    position: absolute;
+    text-align: center;
+}
+
+.timer-time {
+    font-family: var(--font-heading);
+    font-size: 4.5rem;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.timer-label {
+    font-family: var(--font-ui);
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+}
+
+.timer-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.pomodoro-stats {
+    display: flex;
+    justify-content: space-around;
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+    margin-bottom: var(--spacing-lg);
+}
+
+.pomo-stat {
+    text-align: center;
+}
+
+.pomo-stat-value {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.pomo-stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.timer-settings h4 {
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.setting-row input {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    width: 60px;
+}

@@ -1,0 +1,104 @@
+/* === TASKS === */
+.tasks-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.task-input-card {
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    gap: 1rem;
+}
+
+.task-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    background: transparent;
+    color: var(--text-primary);
+    border-radius: 4px;
+}
+
+.task-input-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.task-priority-select {
+    background: var(--surface-dark);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 0 1rem;
+    border-radius: 4px;
+}
+
+.task-item {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    background: var(--surface-dark);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    justify-content: space-between;
+}
+
+.task-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid var(--border-color);
+    margin-right: var(--spacing-sm);
+    border-radius: 4px;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.task-item.priority-high {
+    border-left: 3px solid #ef4444;
+}
+
+.task-item.priority-medium {
+    border-left: 3px solid #f59e0b;
+}
+
+.task-item.priority-low {
+    border-left: 3px solid #10b981;
+}
+
+.task-item.completed {
+    opacity: 0.6;
+}
+
+.task-item.completed .task-checkbox {
+    background: var(--text-primary);
+    border-color: var(--text-primary);
+}
+
+.task-item.completed .task-text {
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+.task-text {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.task-delete {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0 0.5rem;
+}
+
+.task-delete:hover {
+    color: #ef4444;
+}

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Productivity Hub Dashboard">
+    <title>Productivity Hub - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">⚡</div>
+                <h1>ProductivityHub</h1>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a href="pomodoro.html" class="nav-item">
+                    <span class="nav-icon">☕</span>
+                    <span class="nav-label">Pomodoro</span>
+                </a>
+                <a href="habits.html" class="nav-item">
+                    <span class="nav-icon">✨</span>
+                    <span class="nav-label">Habits</span>
+                </a>
+                <a href="tasks.html" class="nav-item">
+                    <span class="nav-icon">✓</span>
+                    <span class="nav-label">Tasks</span>
+                </a>
+                <a href="goals.html" class="nav-item">
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-label">Goals</span>
+                </a>
+                <a href="focus.html" class="nav-item">
+                    <span class="nav-icon">🧘</span>
+                    <span class="nav-label">Focus Mode</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="streak-badge">
+                    <div class="streak-icon">🔥</div>
+                    <div class="streak-info">
+                        <div class="streak-number" id="currentStreak">0</div>
+                        <div class="streak-label">Day Streak</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="page-header">
+                <div>
+                    <h2 class="page-title">Dashboard</h2>
+                    <p class="page-subtitle" id="dashboardGreeting">Welcome back!</p>
+                </div>
+                <div class="header-actions">
+                    <div class="date-display" id="currentDate"></div>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Quick Stats -->
+                <div class="stat-card">
+                    <div class="stat-icon">☕</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="todayPomodoros">0</div>
+                        <div class="stat-label">Coffees Today</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">✓</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="todayTasks">0</div>
+                        <div class="stat-label">Tasks Completed</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">✨</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="todayHabits">0%</div>
+                        <div class="stat-label">Habits Completed</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="todayFocusTime">0h</div>
+                        <div class="stat-label">Focus Time</div>
+                    </div>
+                </div>
+
+                <!-- Weekly Overview Chart -->
+                <div class="card chart-card">
+                    <h3 class="card-title">Weekly Productivity</h3>
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+
+                <!-- Habit Completion Chart -->
+                <div class="card chart-card">
+                    <h3 class="card-title">Habit Completion Rate</h3>
+                    <canvas id="habitCompletionChart"></canvas>
+                </div>
+
+                <!-- Today's Goals Preview -->
+                <div class="card goals-preview">
+                    <h3 class="card-title">Today's Goals</h3>
+                    <div id="goalsPreview" class="goals-preview-list"></div>
+                </div>
+
+                <!-- Quick Tasks -->
+                <div class="card tasks-preview">
+                    <h3 class="card-title">Upcoming Tasks</h3>
+                    <div id="tasksPreview" class="tasks-preview-list"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="charts.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
