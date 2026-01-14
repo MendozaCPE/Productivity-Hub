@@ -1,2 +1,2 @@
-# Daily-Commit
-Practicing my committing habits
+# Productivity Hub
+User can track habits, goals, tasks, and focus sessions.
