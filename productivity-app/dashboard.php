@@ -109,11 +109,11 @@
         <!-- Main Content Area -->
         <main class="main-content">
             <header class="page-header">
-                <div>
-                    <h2 class="page-title">Dashboard</h2>
-                    <p class="page-subtitle" id="dashboardGreeting">Welcome back!</p>
+                <div class="header-left">
+                    <p class="page-subtitle" id="dashboardGreeting">Welcome back ☕</p>
                 </div>
-                <div class="header-actions">
+
+                <div class="header-right">
                     <div class="date-display" id="currentDate"></div>
                 </div>
             </header>

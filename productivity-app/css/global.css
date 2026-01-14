@@ -184,22 +184,41 @@ body {
     margin: 0 auto;
 }
 
+/* === HEADER ROW LAYOUT === */
 .page-header {
-    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 20px;
 }
 
-.page-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    font-family: var(--font-heading);
-    color: var(--text-primary);
+/* Left side (welcome text) */
+.header-left {
+    display: flex;
+    align-items: center;
 }
 
-.page-subtitle {
-    color: var(--text-secondary);
-    font-size: 1.1rem;
+/* Right side (date) */
+.header-right {
+    display: flex;
+    align-items: center;
 }
+
+/* Date pill styling */
+.date-display {
+    padding: 0.6rem 1.25rem;
+    background: rgba(198, 124, 78, 0.12);
+    border: 1px solid rgba(198, 124, 78, 0.25);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(6px);
+}
+
 
 /* === SIDEBAR === */
 .sidebar {
@@ -229,6 +248,17 @@ body {
     /* More space below logo */
     padding-left: 0.5rem;
 }
+
+.logo h1 {
+    font-size: 1.1rem;
+    /* ← smaller logo name */
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1;
+}
+
 
 .logo-icon {
     font-size: 1.8rem;
