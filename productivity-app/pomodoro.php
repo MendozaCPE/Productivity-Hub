@@ -1,385 +1,397 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productivity Hub – Pomodoro</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Productivity Hub – Pomodoro</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700&display=swap"
-        rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="css/global.css">
 <style>
-/* ================= COFFEE TIMER ================= */
-.coffee-scene {
-    position: relative;
-    width: 280px;
-    height: 280px;
-    margin: auto;
-    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+/* ================= THEME ================= */
+:root{
+    --bg:#191716;
+    --surface-dark:#231f1c;
+    --surface-light:#2c2724;
+    --surface-hover:#36302c;
+    --border:rgba(234,221,207,.08);
+    --text-primary:#eaddcf;
+    --text-secondary:#a89f91;
+    --accent:#c67c4e;
+    --accent-glow:rgba(198,124,78,.45);
+    --font-heading:'Outfit',sans-serif;
+    --font-body:'Inter',sans-serif;
 }
 
-.coffee-cup {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 180px;
-    height: 150px;
-    background: linear-gradient(135deg, #f3f0eb, #e6e0d4);
-    /* Ceramic White */
-    border-radius: 0 0 90px 90px;
-    overflow: hidden;
-    box-shadow:
-        inset 0 -10px 15px rgba(0, 0, 0, 0.05),
-        inset 0 5px 10px rgba(255, 255, 255, 0.8),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
-    border: none;
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+    font-family:var(--font-body);
+    background:radial-gradient(circle at top,#2a2522,#191716);
+    color:var(--text-primary);
+    min-height:100vh;
 }
 
-.coffee-cup::after {
-    /* Handle of the cup */
-    content: '';
-    position: absolute;
-    right: -45px;
-    top: 20px;
-    width: 40px;
-    height: 70px;
-    border: 12px solid #e6e0d4;
-    border-radius: 0 25px 25px 0;
-    z-index: -1;
-    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
+.container{display:flex;min-height:100vh}
+
+/* ================= SIDEBAR ================= */
+.sidebar{
+    width:280px;
+    background:rgba(35,31,28,.96);
+    border-right:1px solid var(--border);
+    padding:3rem 2rem;
+    display:flex;
+    flex-direction:column;
 }
 
-.coffee-liquid {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 0%;
-    /* Rich Espresso Gradient: Black Coffee -> Crema */
-    background: linear-gradient(to top, #1a0f0a 0%, #3d261a 60%, #8c5e3c 100%);
-    will-change: height;
-    transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+.logo{
+    display:flex;
+    align-items:center;
+    gap:.75rem;
+    margin-bottom:4rem;
+    font-family:var(--font-heading);
 }
 
-.coffee-surface {
-    position: absolute;
-    top: -5px;
-    width: 200%;
-    height: 10px;
-    /* Crema Foam Texture */
-    background: radial-gradient(circle at 50% 50%, rgba(214, 169, 128, 0.4), transparent 60%);
-    animation: wave 4s ease-in-out infinite;
-    opacity: 0.7;
+.logo-icon{
+    font-size:1.6rem;
+    filter:drop-shadow(0 0 10px var(--accent-glow));
 }
 
-@keyframes wave {
-    0% {
-        transform: translateX(-25%) scaleY(1);
-    }
-
-    50% {
-        transform: translateX(0%) scaleY(1.2);
-    }
-
-    100% {
-        transform: translateX(25%) scaleY(1);
-    }
+.logo h1{
+    font-size:.95rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
 }
 
-.steam span {
-    width: 12px;
-    height: 60px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
-    border-radius: 50%;
-    animation: steam 6s ease-in-out infinite;
-    opacity: 0;
-    filter: blur(8px);
+.nav-menu{
+    display:flex;
+    flex-direction:column;
+    gap:1.1rem;
+    flex:1;
 }
 
-@keyframes steam {
-    0% {
-        transform: translateY(0) scaleX(1);
-        opacity: 0;
-    }
-
-    30% {
-        opacity: 0.6;
-    }
-
-    100% {
-        transform: translateY(-80px) scaleX(2);
-        opacity: 0;
-    }
+.nav-item{
+    padding:1rem 1.25rem;
+    border-radius:16px;
+    text-decoration:none;
+    color:var(--text-secondary);
+    transition:.3s;
 }
 
-/* ... steam opacity/keyframes ... */
-
-.coffee-cup.complete {
-    box-shadow:
-        0 0 40px rgba(198, 124, 78, 0.4),
-        inset 0 -10px 15px rgba(0, 0, 0, 0.05);
+.nav-item:hover{
+    background:rgba(255,255,255,.04);
+    transform:translateX(6px);
 }
 
-/* ================= TEXT ================= */
-.timer-content-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    text-align: center;
-    z-index: 2;
-    pointer-events: none;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    /* Readable content over cup */
-    margin-top: -10px;
+.nav-item.active{
+    background:rgba(198,124,78,.18);
+    color:var(--accent);
+    font-weight:700;
 }
 
-.timer-time {
-    font-family: var(--font-heading);
-    font-size: 3.5rem;
-    font-weight: 700;
-    color: #fff;
-    mix-blend-mode: overlay;
-    /* Blends nicely with liquid */
-    opacity: 0.9;
+.sidebar-footer{font-weight:600}
+
+/* ================= MAIN ================= */
+.main-content{flex:1;padding:4rem}
+
+.page-title{
+    font-family:var(--font-heading);
+    font-size:2.4rem;
 }
 
-.timer-content-text .timer-label {
-    letter-spacing: 0.3em;
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
-    text-transform: uppercase;
-    mix-blend-mode: overlay;
+.page-subtitle{color:var(--text-secondary)}
+
+.pomodoro-container{
+    display:flex;
+    justify-content:center;
+    margin-top:4rem;
 }
 
-/* ================= CONTROLS ================= */
-.timer-controls {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-top: 3rem;
+.pomodoro-card{
+    width:520px;
+    padding:4rem 3rem;
+    background:var(--surface-dark);
+    border:1px solid var(--border);
+    border-radius:36px;
+    text-align:center;
+    box-shadow:0 40px 80px rgba(0,0,0,.55);
 }
 
-.timer-mode-selector {
-    display: flex;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: var(--spacing-xl);
-    background: var(--surface-light);
-    padding: 0.5rem;
-    border-radius: 999px;
-    display: inline-flex;
-    /* center it */
+/* ================= MODE SELECT ================= */
+.timer-mode-selector{
+    display:inline-flex;
+    background:var(--surface-light);
+    padding:.4rem;
+    border-radius:999px;
+    margin-bottom:2.5rem;
 }
 
-.mode-btn {
-    padding: 0.5rem 1.25rem;
-    background: transparent;
-    border: none;
-    color: var(--text-secondary);
-    border-radius: 999px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-family: var(--font-ui);
-    font-weight: 500;
-    transition: all 0.3s ease;
+.mode-btn{
+    border:none;
+    background:transparent;
+    padding:.5rem 1.4rem;
+    border-radius:999px;
+    color:var(--text-secondary);
+    cursor:pointer;
 }
 
-.mode-btn:hover {
-    color: var(--text-primary);
+.mode-btn.active{
+    background:var(--surface-hover);
+    color:var(--accent);
 }
 
-.mode-btn.active {
-    background: var(--surface-hover);
-    /* Slightly lighter wood */
-    color: var(--accent);
-    font-weight: 600;
-    box-shadow: var(--shadow-sm);
+/* ================= COFFEE STAGE ================= */
+.coffee-stage{
+    position:relative;
+    width:260px;
+    height:260px;
+    margin:auto;
 }
 
-.pomodoro-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 60vh;
+/* TIMER */
+.timer-overlay{
+    position:absolute;
+    top:60px;
+    left:50%;
+    transform:translateX(-50%);
+    text-align:center;
+    z-index:5;
 }
 
-.pomodoro-card {
-    background: var(--surface-dark);
-    border: 1px solid var(--border-color);
-    border-radius: 32px;
-    padding: 4rem 3rem;
-    width: 500px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+.timer-time{
+    font-family:var(--font-heading);
+    font-size:3.2rem;
+    color:#fff;
 }
 
-/* Subtle grain texture overlay on card */
-.pomodoro-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
+.timer-label{
+    font-size:.7rem;
+    letter-spacing:.35em;
+    opacity:.75;
 }
-    </style>
+
+/* ================================================= */
+/* ========== PIXELATED CUP (ONLY PART) ============ */
+/* ================================================= */
+
+.coffee-cup{
+    position:absolute;
+    bottom:24px;
+    left:50%;
+    transform:translateX(-50%);
+    width:120px;
+    height:90px;
+
+    background:#e6dccf;
+    border:4px solid #b8a999;
+    border-radius:0;
+    overflow:hidden;
+
+    image-rendering:pixelated;
+}
+
+/* coffee fill */
+.coffee-liquid{
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height:0%;
+    background:#5a3a22;
+    transition:height .25s steps(10);
+}
+
+.coffee-surface{
+    position:absolute;
+    top:-6px;
+    width:100%;
+    height:6px;
+    background:#8a5a3a;
+}
+
+/* handle */
+.coffee-cup::after{
+    content:"";
+    position:absolute;
+    right:-20px;
+    top:24px;
+    width:20px;
+    height:36px;
+    background:#e6dccf;
+    border:4px solid #b8a999;
+}
+
+/* saucer */
+.cup-holder{
+    position:absolute;
+    bottom:8px;
+    left:50%;
+    transform:translateX(-50%);
+    width:160px;
+    height:16px;
+    background:#cbbca8;
+    border:4px solid #9d8f7a;
+}
+
+/* steam */
+.steam span{
+    position:absolute;
+    bottom:120px;
+    left:50%;
+    width:8px;
+    height:16px;
+    background:#d8d0c5;
+    opacity:0;
+    animation:steam 2s steps(2) infinite;
+}
+
+.steam span:nth-child(1){margin-left:-16px}
+.steam span:nth-child(2){animation-delay:1s}
+.steam span:nth-child(3){margin-left:16px;animation-delay:.5s}
+
+@keyframes steam{
+    0%{opacity:0;transform:translateY(0)}
+    50%{opacity:1}
+    100%{opacity:0;transform:translateY(-16px)}
+}
+
+/* ================= BUTTONS ================= */
+.timer-controls{
+    display:flex;
+    justify-content:center;
+    gap:1.5rem;
+    margin-top:2.5rem;
+}
+
+.btn-primary,.btn-secondary{
+    padding:.8rem 2.2rem;
+    border-radius:999px;
+    border:none;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.btn-primary{
+    background:var(--accent);
+    color:#fff;
+    box-shadow:0 0 25px var(--accent-glow);
+}
+
+.btn-secondary{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text-secondary);
+}
+</style>
 </head>
 
 <body>
+<div class="container">
 
-    <div class="container">
-
-        <!-- ========== SIDEBAR ========== -->
-        <aside class="sidebar">
-            <div class="logo">
-                <div class="logo-icon">⚡</div>
-                <h1>ProductivityHub</h1>
-            </div>
-
-            <nav class="nav-menu">
-                <a href="dashboard.php" class="nav-item">📊 Dashboard</a>
-                <a href="pomodoro.php" class="nav-item active">☕ Pomodoro</a>
-                <a href="habits.php" class="nav-item">✨ Habits</a>
-                <a href="tasks.php" class="nav-item">✓ Tasks</a>
-                <a href="goals.php" class="nav-item">🎯 Goals</a>
-                <a href="focus.php" class="nav-item">🧘 Focus</a>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="streak-badge" style="background: transparent; border: none; padding: 0;">
-                    <span style="font-size: 1.2rem;">🔥</span>
-                    <span style="font-weight: 700; color: var(--text-primary);">Day Streak: <span
-                            id="currentStreak">0</span></span>
-                </div>
-            </div>
-        </aside>
-
-        <!-- ========== MAIN ========== -->
-        <main class="main-content" id="pomodoro">
-            <header class="page-header">
-                <div>
-                    <h2 class="page-title">Pomodoro Timer</h2>
-                    <p class="page-subtitle">Brew your productivity</p>
-                </div>
-            </header>
-
-            <div class="pomodoro-container">
-                <div class="pomodoro-card">
-
-                    <div class="timer-mode-selector">
-                        <button class="mode-btn active" data-mode="work">Brew</button>
-                        <button class="mode-btn" data-mode="short">Sip</button>
-                        <button class="mode-btn" data-mode="long">Refill</button>
-                    </div>
-
-                    <div class="coffee-scene">
-                        <div class="coffee-cup" id="cup">
-                            <div class="coffee-liquid" id="coffee">
-                                <div class="coffee-surface"></div>
-                            </div>
-                            <div class="steam">
-                                <span></span><span></span><span></span>
-                            </div>
-                        </div>
-
-                        <div class="timer-content-text">
-                            <div class="timer-time" id="time">25:00</div>
-                            <div class="timer-label">Focus Time</div>
-                        </div>
-                    </div>
-
-                    <div class="timer-controls">
-                        <button class="btn-primary" id="start">Start</button>
-                        <button class="btn-secondary" id="reset">Reset</button>
-                    </div>
-
-                </div>
-            </div>
-        </main>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <h1>ProductivityHub</h1>
     </div>
 
-    <!-- Scripts -->
-    <script src="app.js"></script> <!-- Re-added: Needed for CRUD/Sidebar stats -->
-    <script>
-        // Custom Coffee Timer Logic (integrating with app.js fallback/sync would be ideal, 
-        // but for now keeping the user's visualisation logic effectively)
+    <nav class="nav-menu">
+        <a class="nav-item">📊 Dashboard</a>
+        <a class="nav-item active">☕ Pomodoro</a>
+        <a class="nav-item">✨ Habits</a>
+        <a class="nav-item">✓ Tasks</a>
+        <a class="nav-item">🎯 Goals</a>
+        <a class="nav-item">🧘 Focus</a>
+    </nav>
 
-        // Note: We need to ensure this doesn't conflict with app.js. 
-        // app.js looks for 'startPauseBtn' but here we have 'start'. 
-        // We will add bridge logic here to save stats.
+    <div class="sidebar-footer">🔥 Day Streak: 0</div>
+</aside>
 
-        const TOTAL = 25 * 60;
-        let remaining = TOTAL;
-        let running = false;
-        let last = null;
+<!-- MAIN -->
+<main class="main-content">
+    <h2 class="page-title">Pomodoro Timer</h2>
+    <p class="page-subtitle">Brew your productivity ☕</p>
 
-        const coffee = document.getElementById("coffee");
-        const timeEl = document.getElementById("time");
-        const cup = document.getElementById("cup");
+    <div class="pomodoro-container">
+        <div class="pomodoro-card">
 
-        function format(t) {
-            const m = Math.floor(t / 60);
-            const s = Math.floor(t % 60);
-            return `${m}:${s.toString().padStart(2, "0")}`;
-        }
+            <div class="timer-mode-selector">
+                <button class="mode-btn active">Brew</button>
+                <button class="mode-btn">Sip</button>
+                <button class="mode-btn">Refill</button>
+            </div>
 
-        function animate(ts) {
-            if (!running) return;
-            if (!last) last = ts;
-            const delta = (ts - last) / 1000;
-            last = ts;
+            <div class="coffee-stage">
 
-            remaining = Math.max(0, remaining - delta);
-            const progress = 1 - remaining / TOTAL;
+                <div class="timer-overlay">
+                    <div class="timer-time" id="time">25:00</div>
+                    <div class="timer-label">FOCUS TIME</div>
+                </div>
 
-            coffee.style.height = `${progress * 100}%`;
-            timeEl.textContent = format(remaining);
+                <div class="coffee-cup">
+                    <div class="coffee-liquid" id="coffee">
+                        <div class="coffee-surface"></div>
+                    </div>
+                </div>
 
-            if (remaining <= 0) {
-                running = false;
-                cup.classList.add("complete");
-                // TRIGGER SAVE VIA GLOBAL API IF AVAILABLE
-                if (window.apiCall) {
-                    // Mocking session completion
-                    // In a real scenario we'd track sessions properly
-                    window.apiCall('update_pomodoro', {
-                        sessionsCompleted: (window.state?.pomodoro?.sessionsCompleted || 0) + 1,
-                        totalFocusTime: (window.state?.pomodoro?.totalFocusTime || 0) + 25
-                    });
-                    // Also refresh state
-                    if (window.loadState) window.loadState();
-                }
-            } else {
-                requestAnimationFrame(animate);
-            }
-        }
+                <div class="cup-holder"></div>
 
-        document.getElementById("start").onclick = () => {
-            if (!running) {
-                running = true;
-                last = null;
-                requestAnimationFrame(animate);
-            }
-        };
+                <div class="steam">
+                    <span></span><span></span><span></span>
+                </div>
 
-        document.getElementById("reset").onclick = () => {
-            running = false;
-            remaining = TOTAL;
-            coffee.style.height = "0%";
-            timeEl.textContent = "25:00";
-            cup.classList.remove("complete");
-        };
-    </script>
+            </div>
 
+            <div class="timer-controls">
+                <button class="btn-primary" id="start">Start</button>
+                <button class="btn-secondary" id="reset">Reset</button>
+            </div>
+
+        </div>
+    </div>
+</main>
+</div>
+
+<script>
+const TOTAL=25*60;
+let remaining=TOTAL,running=false,last=null;
+const coffee=document.getElementById("coffee");
+const timeEl=document.getElementById("time");
+
+function format(t){
+    const m=Math.floor(t/60);
+    const s=Math.floor(t%60);
+    return `${m}:${String(s).padStart(2,"0")}`;
+}
+
+function animate(ts){
+    if(!running)return;
+    if(!last)last=ts;
+    const delta=(ts-last)/1000;
+    last=ts;
+
+    remaining=Math.max(0,remaining-delta);
+    coffee.style.height=((1-remaining/TOTAL)*100)+"%";
+    timeEl.textContent=format(remaining);
+
+    if(remaining>0)requestAnimationFrame(animate);
+}
+
+start.onclick=()=>{
+    if(!running){
+        running=true;
+        last=null;
+        requestAnimationFrame(animate);
+    }
+};
+
+reset.onclick=()=>{
+    running=false;
+    remaining=TOTAL;
+    coffee.style.height="0%";
+    timeEl.textContent="25:00";
+};
+</script>
 </body>
-
 </html>
