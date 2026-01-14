@@ -27,12 +27,12 @@
             </div>
 
             <nav class="nav-menu">
-                <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
-                <a href="pomodoro.html" class="nav-item active">☕ Pomodoro</a>
-                <a href="habits.html" class="nav-item">✨ Habits</a>
-                <a href="tasks.html" class="nav-item">✓ Tasks</a>
-                <a href="goals.html" class="nav-item">🎯 Goals</a>
-                <a href="focus.html" class="nav-item">🧘 Focus</a>
+                <a href="dashboard.php" class="nav-item">📊 Dashboard</a>
+                <a href="pomodoro.php" class="nav-item active">☕ Pomodoro</a>
+                <a href="habits.php" class="nav-item">✨ Habits</a>
+                <a href="tasks.php" class="nav-item">✓ Tasks</a>
+                <a href="goals.php" class="nav-item">🎯 Goals</a>
+                <a href="focus.php" class="nav-item">🧘 Focus</a>
             </nav>
 
             <div class="sidebar-footer">
