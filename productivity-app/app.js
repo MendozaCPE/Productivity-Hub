@@ -333,7 +333,22 @@ function updateTimerDisplay() {
         const offset = dashArray - (elapsed / total) * dashArray;
         ring.style.strokeDashoffset = offset;
     }
+
+    // Coffee cup animation for pomodoro.php
+    const coffee = document.getElementById('coffee');
+    if (coffee) {
+        const durations = {
+            work: state.pomodoro.workDuration * 60,
+            short: state.pomodoro.shortBreakDuration * 60,
+            long: state.pomodoro.longBreakDuration * 60
+        };
+        const total = durations[state.pomodoro.mode];
+        const elapsed = total - state.pomodoro.timeLeft;
+        const heightPercent = (elapsed / total) * 100;
+        coffee.style.height = `${heightPercent}%`;
+    }
 }
+
 
 function updatePomodoroStats() {
     const sessionCount = document.getElementById('sessionCount');

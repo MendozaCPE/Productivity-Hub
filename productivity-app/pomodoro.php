@@ -297,15 +297,20 @@ body{
     </div>
 
     <nav class="nav-menu">
-        <a class="nav-item">📊 Dashboard</a>
-        <a class="nav-item active">☕ Pomodoro</a>
-        <a class="nav-item">✨ Habits</a>
-        <a class="nav-item">✓ Tasks</a>
-        <a class="nav-item">🎯 Goals</a>
-        <a class="nav-item">🧘 Focus</a>
+        <a href="dashboard.php" class="nav-item">📊 Dashboard</a>
+        <a href="pomodoro.php" class="nav-item active">☕ Pomodoro</a>
+        <a href="habits.php" class="nav-item">✨ Habits</a>
+        <a href="tasks.php" class="nav-item">✓ Tasks</a>
+        <a href="goals.php" class="nav-item">🎯 Goals</a>
+        <a href="focus.php" class="nav-item">🧘 Focus</a>
     </nav>
 
-    <div class="sidebar-footer">🔥 Day Streak: 0</div>
+    <div class="sidebar-footer">
+        <div class="streak-badge" style="background: transparent; border: none; padding: 0;">
+            <span style="font-size: 1.2rem;">🔥</span>
+            <span style="font-weight: 700; color: var(--text-primary);">Day Streak: <span id="currentStreak">0</span></span>
+        </div>
+    </div>
 </aside>
 
 <!-- MAIN -->
@@ -317,16 +322,16 @@ body{
         <div class="pomodoro-card">
 
             <div class="timer-mode-selector">
-                <button class="mode-btn active">Brew</button>
-                <button class="mode-btn">Sip</button>
-                <button class="mode-btn">Refill</button>
+                <button class="mode-btn active" data-mode="work">Brew</button>
+                <button class="mode-btn" data-mode="short">Sip</button>
+                <button class="mode-btn" data-mode="long">Refill</button>
             </div>
 
             <div class="coffee-stage">
 
                 <div class="timer-overlay">
-                    <div class="timer-time" id="time">25:00</div>
-                    <div class="timer-label">FOCUS TIME</div>
+                    <div class="timer-time" id="timerDisplay">25:00</div>
+                    <div class="timer-label" id="timerLabel">FOCUS TIME</div>
                 </div>
 
                 <div class="coffee-cup">
@@ -344,8 +349,8 @@ body{
             </div>
 
             <div class="timer-controls">
-                <button class="btn-primary" id="start">Start</button>
-                <button class="btn-secondary" id="reset">Reset</button>
+                <button class="btn-primary" id="startPauseBtn"><span id="startPauseText">Start</span></button>
+                <button class="btn-secondary" id="resetBtn">Reset</button>
             </div>
 
         </div>
@@ -353,45 +358,8 @@ body{
 </main>
 </div>
 
-<script>
-const TOTAL=25*60;
-let remaining=TOTAL,running=false,last=null;
-const coffee=document.getElementById("coffee");
-const timeEl=document.getElementById("time");
-
-function format(t){
-    const m=Math.floor(t/60);
-    const s=Math.floor(t%60);
-    return `${m}:${String(s).padStart(2,"0")}`;
-}
-
-function animate(ts){
-    if(!running)return;
-    if(!last)last=ts;
-    const delta=(ts-last)/1000;
-    last=ts;
-
-    remaining=Math.max(0,remaining-delta);
-    coffee.style.height=((1-remaining/TOTAL)*100)+"%";
-    timeEl.textContent=format(remaining);
-
-    if(remaining>0)requestAnimationFrame(animate);
-}
-
-start.onclick=()=>{
-    if(!running){
-        running=true;
-        last=null;
-        requestAnimationFrame(animate);
-    }
-};
-
-reset.onclick=()=>{
-    running=false;
-    remaining=TOTAL;
-    coffee.style.height="0%";
-    timeEl.textContent="25:00";
-};
-</script>
+<!-- Scripts -->
+<script src="charts.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
