@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
 
 <style>
 /* ================= THEME ================= */
@@ -36,62 +37,7 @@ body{
 
 .container{display:flex;min-height:100vh}
 
-/* ================= SIDEBAR ================= */
-.sidebar{
-    width:280px;
-    background:rgba(35,31,28,.96);
-    border-right:1px solid var(--border);
-    padding:3rem 2rem;
-    display:flex;
-    flex-direction:column;
-}
 
-.logo{
-    display:flex;
-    align-items:center;
-    gap:.75rem;
-    margin-bottom:4rem;
-    font-family:var(--font-heading);
-}
-
-.logo-icon{
-    font-size:1.6rem;
-    filter:drop-shadow(0 0 10px var(--accent-glow));
-}
-
-.logo h1{
-    font-size:.95rem;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-}
-
-.nav-menu{
-    display:flex;
-    flex-direction:column;
-    gap:1.1rem;
-    flex:1;
-}
-
-.nav-item{
-    padding:1rem 1.25rem;
-    border-radius:16px;
-    text-decoration:none;
-    color:var(--text-secondary);
-    transition:.3s;
-}
-
-.nav-item:hover{
-    background:rgba(255,255,255,.04);
-    transform:translateX(6px);
-}
-
-.nav-item.active{
-    background:rgba(198,124,78,.18);
-    color:var(--accent);
-    font-weight:700;
-}
-
-.sidebar-footer{font-weight:600}
 
 /* ================= MAIN ================= */
 .main-content{flex:1;padding:4rem}
