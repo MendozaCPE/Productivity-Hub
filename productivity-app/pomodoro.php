@@ -91,8 +91,8 @@ body{
 /* ================= COFFEE STAGE ================= */
 .coffee-stage{
     position:relative;
-    width:260px;
-    height:260px;
+    width:340px;
+    height:340px;
     margin:auto;
 }
 
@@ -124,16 +124,16 @@ body{
 
 .coffee-cup{
     position:absolute;
-    bottom:24px;
+    bottom:40px;
     left:50%;
     transform:translateX(-50%);
-    width:120px;
-    height:90px;
+    width:180px;
+    height:130px;
 
     background:#e6dccf;
-    border:4px solid #b8a999;
+    border:5px solid #b8a999;
     border-radius:0;
-    overflow:hidden;
+    overflow:visible;
 
     image-rendering:pixelated;
 }
@@ -146,6 +146,7 @@ body{
     height:0%;
     background:#5a3a22;
     transition:height .25s steps(10);
+    overflow:hidden;
 }
 
 .coffee-surface{
@@ -156,37 +157,63 @@ body{
     background:#8a5a3a;
 }
 
-/* handle */
+/* mug ear – outer (BLOCKY) */
 .coffee-cup::after{
     content:"";
     position:absolute;
-    right:-20px;
-    top:24px;
-    width:20px;
-    height:36px;
+    right:-46px;
+    top:28px;
+    width:46px;
+    height:72px;
+
     background:#e6dccf;
-    border:4px solid #b8a999;
+    border:5px solid #b8a999;
+
+    /* NO CURVES */
+    border-radius:6px;
+
+    z-index:2;
 }
+
+/* mug ear – inner hole (BLOCKY) */
+.coffee-cup::before{
+    content:"";
+    position:absolute;
+    right:-34px;
+    top:40px;
+    width:26px;
+    height:44px;
+
+    background:var(--bg);
+
+    /* NO CURVES */
+    border-radius:4px;
+
+    z-index:3;
+}
+
+
+
 
 /* saucer */
 .cup-holder{
     position:absolute;
-    bottom:8px;
+    bottom:18px;
     left:50%;
     transform:translateX(-50%);
-    width:160px;
-    height:16px;
+    width:220px;
+    height:20px;
     background:#cbbca8;
-    border:4px solid #9d8f7a;
+    border:5px solid #9d8f7a;
 }
 
 /* steam */
 .steam span{
     position:absolute;
-    bottom:120px;
+    bottom:190px;
     left:50%;
-    width:8px;
-    height:16px;
+    width:10px;
+    height:20px;
     background:#d8d0c5;
     opacity:0;
     animation:steam 2s steps(2) infinite;
