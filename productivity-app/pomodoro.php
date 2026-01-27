@@ -2,161 +2,144 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Pomodoro – Productivity Hub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Productivity Hub – Pomodoro</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
 
 <style>
-/* ================= BASE ================= */
+/* ================= THEME ================= */
 :root{
     --bg:#191716;
-    --surface:#231f1c;
+    --surface-dark:#231f1c;
     --surface-light:#2c2724;
+    --surface-hover:#36302c;
     --border:rgba(234,221,207,.08);
-    --text:#eaddcf;
-    --muted:#a89f91;
+    --text-primary:#eaddcf;
+    --text-secondary:#a89f91;
     --accent:#c67c4e;
+    --accent-glow:rgba(198,124,78,.45);
+    --font-heading:'Outfit',sans-serif;
+    --font-body:'Inter',sans-serif;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 
 body{
-    font-family:Inter,sans-serif;
+    font-family:var(--font-body);
     background:radial-gradient(circle at top,#2a2522,#191716);
-    color:var(--text);
+    color:var(--text-primary);
+    min-height:100vh;
 }
 
 .container{display:flex;min-height:100vh}
 
-/* ================= SIDEBAR ================= */
-.sidebar{
-    width:260px;
-    background:rgba(35,31,28,.96);
-    border-right:1px solid var(--border);
-    padding:2.5rem 2rem;
-    display:flex;
-    flex-direction:column;
-}
 
-.logo{
-    font-family:Outfit;
-    display:flex;
-    gap:.75rem;
-    align-items:center;
-    margin-bottom:3rem;
-}
-
-.nav-menu{
-    display:flex;
-    flex-direction:column;
-    gap:1rem;
-    flex:1;
-}
-
-.nav-item{
-    padding:1rem;
-    border-radius:14px;
-    text-decoration:none;
-    color:var(--muted);
-}
-
-.nav-item.active{
-    background:rgba(198,124,78,.2);
-    color:var(--accent);
-    font-weight:700;
-}
 
 /* ================= MAIN ================= */
-.main{
-    flex:1;
-    padding:3rem;
+.main-content{flex:1;padding:4rem}
+
+.page-title{
+    font-family:var(--font-heading);
+    font-size:2.4rem;
 }
 
-h1{
-    font-family:Outfit;
-    font-size:2.2rem;
+.page-subtitle{color:var(--text-secondary)}
+
+.pomodoro-container{
+    display:flex;
+    justify-content:center;
+    margin-top:4rem;
 }
 
-.subtitle{
-    color:var(--muted);
-    margin-bottom:2rem;
-}
-
-/* ================= CARD ================= */
-.card{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:32px;
-    padding:3rem;
+.pomodoro-card{
     width:520px;
-    margin:auto;
+    padding:4rem 3rem;
+    background:var(--surface-dark);
+    border:1px solid var(--border);
+    border-radius:36px;
     text-align:center;
+    box-shadow:0 40px 80px rgba(0,0,0,.55);
 }
 
-/* ================= FOCUS TASK ================= */
-.focus-task{
+/* ================= MODE SELECT ================= */
+.timer-mode-selector{
+    display:inline-flex;
     background:var(--surface-light);
-    padding:1rem;
-    border-radius:16px;
-    margin-bottom:1.5rem;
+    padding:.4rem;
+    border-radius:999px;
+    margin-bottom:2.5rem;
 }
 
-.focus-task input{
-    width:100%;
-    background:transparent;
+.mode-btn{
     border:none;
-    color:var(--text);
-    text-align:center;
-    font-size:.95rem;
+    background:transparent;
+    padding:.5rem 1.4rem;
+    border-radius:999px;
+    color:var(--text-secondary);
+    cursor:pointer;
 }
 
-/* ================= TIMER ================= */
-.timer{
-    font-family:Outfit;
-    font-size:3.4rem;
-    margin-bottom:.5rem;
+.mode-btn.active{
+    background:var(--surface-hover);
+    color:var(--accent);
 }
 
-.timer-msg{
-    font-size:.8rem;
-    color:var(--muted);
-    margin-bottom:1rem;
-}
-
-/* ================= PIXEL CUP ================= */
+/* ================= COFFEE STAGE ================= */
 .coffee-stage{
     position:relative;
-    width:200px;
-    height:220px;
-    margin:1.5rem auto;
+    width:260px;
+    height:260px;
+    margin:auto;
 }
 
-.cup{
+/* TIMER */
+.timer-overlay{
+    position:absolute;
+    top:0px;
+    left:50%;
+    transform:translateX(-50%);
+    text-align:center;
+    z-index:5;
+}
+
+.timer-time{
+    font-family:var(--font-heading);
+    font-size:3.2rem;
+    color:#fff;
+}
+
+.timer-label{
+    font-size:.7rem;
+    letter-spacing:.35em;
+    opacity:.75;
+}
+
+/* ================================================= */
+/* ========== PIXELATED CUP (ONLY PART) ============ */
+/* ================================================= */
+
+.coffee-cup{
     position:absolute;
     bottom:24px;
     left:50%;
     transform:translateX(-50%);
     width:120px;
     height:90px;
+
     background:#e6dccf;
     border:4px solid #b8a999;
+    border-radius:0;
+    overflow:hidden;
+
+    image-rendering:pixelated;
 }
 
-.cup::after{
-    content:"";
-    position:absolute;
-    right:-20px;
-    top:22px;
-    width:20px;
-    height:36px;
-    background:#e6dccf;
-    border:4px solid #b8a999;
-}
-
-.liquid{
+/* coffee fill */
+.coffee-liquid{
     position:absolute;
     bottom:0;
     width:100%;
@@ -165,7 +148,28 @@ h1{
     transition:height .25s steps(10);
 }
 
-.saucer{
+.coffee-surface{
+    position:absolute;
+    top:-6px;
+    width:100%;
+    height:6px;
+    background:#8a5a3a;
+}
+
+/* handle */
+.coffee-cup::after{
+    content:"";
+    position:absolute;
+    right:-20px;
+    top:24px;
+    width:20px;
+    height:36px;
+    background:#e6dccf;
+    border:4px solid #b8a999;
+}
+
+/* saucer */
+.cup-holder{
     position:absolute;
     bottom:8px;
     left:50%;
@@ -176,54 +180,54 @@ h1{
     border:4px solid #9d8f7a;
 }
 
-/* ================= CUP MOOD ================= */
-.cup::before{
-    content:"😴";
+/* steam */
+.steam span{
     position:absolute;
-    top:30px;
+    bottom:120px;
     left:50%;
-    transform:translateX(-50%);
-    font-size:16px;
+    width:8px;
+    height:16px;
+    background:#d8d0c5;
+    opacity:0;
+    animation:steam 2s steps(2) infinite;
 }
 
-.cup.focus::before{content:"🙂"}
-.cup.fire::before{content:"🔥"}
-.cup.done::before{content:"🎉"}
+.steam span:nth-child(1){margin-left:-16px}
+.steam span:nth-child(2){animation-delay:1s}
+.steam span:nth-child(3){margin-left:16px;animation-delay:.5s}
 
-/* ================= CONTROLS ================= */
-.controls{
+@keyframes steam{
+    0%{opacity:0;transform:translateY(0)}
+    50%{opacity:1}
+    100%{opacity:0;transform:translateY(-16px)}
+}
+
+/* ================= BUTTONS ================= */
+.timer-controls{
     display:flex;
     justify-content:center;
-    gap:1rem;
-    margin-top:1.5rem;
+    gap:1.5rem;
+    margin-top:2.5rem;
 }
 
-button{
-    padding:.8rem 2rem;
+.btn-primary,.btn-secondary{
+    padding:.8rem 2.2rem;
     border-radius:999px;
     border:none;
-    cursor:pointer;
     font-weight:600;
+    cursor:pointer;
 }
 
-.primary{background:var(--accent);color:#fff}
-.secondary{background:transparent;border:1px solid var(--border);color:var(--muted)}
-
-/* ================= STATS ================= */
-.stats{
-    margin-top:2rem;
-    font-size:.85rem;
-    color:var(--muted);
+.btn-primary{
+    background:var(--accent);
+    color:#fff;
+    box-shadow:0 0 25px var(--accent-glow);
 }
 
-/* ================= REFLECTION ================= */
-.reflection{
-    display:none;
-    margin-top:1.5rem;
-}
-
-.reflection button{
-    margin:.3rem;
+.btn-secondary{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text-secondary);
 }
 </style>
 </head>
@@ -231,134 +235,77 @@ button{
 <body>
 <div class="container">
 
+<!-- SIDEBAR -->
 <aside class="sidebar">
-    <div class="logo">⚡ ProductivityHub</div>
+    <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <h1>ProductivityHub</h1>
+    </div>
+
     <nav class="nav-menu">
-        <a class="nav-item">Dashboard</a>
-        <a class="nav-item active">Pomodoro</a>
-        <a class="nav-item">Habits</a>
-        <a class="nav-item">Tasks</a>
-        <a class="nav-item">Goals</a>
+        <a href="dashboard.php" class="nav-item">📊 Dashboard</a>
+        <a href="pomodoro.php" class="nav-item active">☕ Pomodoro</a>
+        <a href="habits.php" class="nav-item">✨ Habits</a>
+        <a href="tasks.php" class="nav-item">✓ Tasks</a>
+        <a href="goals.php" class="nav-item">🎯 Goals</a>
+        <a href="focus.php" class="nav-item">🧘 Focus</a>
     </nav>
+
+    <div class="sidebar-footer">
+        <div class="streak-badge" style="background: transparent; border: none; padding: 0;">
+            <span style="font-size: 1.2rem;">🔥</span>
+            <span style="font-weight: 700; color: var(--text-primary);">Day Streak: <span id="currentStreak">0</span></span>
+        </div>
+    </div>
 </aside>
 
-<main class="main">
-    <h1>Pomodoro</h1>
-    <p class="subtitle">Brew your focus ☕</p>
+<!-- MAIN -->
+<main class="main-content">
+    <h2 class="page-title">Pomodoro Timer</h2>
+    <p class="page-subtitle">Brew your productivity ☕</p>
 
-    <div class="card">
+    <div class="pomodoro-container">
+        <div class="pomodoro-card">
 
-        <!-- WHY -->
-        <div class="focus-task">
-            <input id="focusInput" placeholder="What are you focusing on?" />
-        </div>
-
-        <!-- TIMER -->
-        <div class="timer" id="time">25:00</div>
-        <div class="timer-msg" id="msg">Ready to brew.</div>
-
-        <!-- CUP -->
-        <div class="coffee-stage">
-            <div class="cup" id="cup">
-                <div class="liquid" id="liquid"></div>
+            <div class="timer-mode-selector">
+                <button class="mode-btn active" data-mode="work">Brew</button>
+                <button class="mode-btn" data-mode="short">Sip</button>
+                <button class="mode-btn" data-mode="long">Refill</button>
             </div>
-            <div class="saucer"></div>
-        </div>
 
-        <!-- CONTROLS -->
-        <div class="controls">
-            <button class="primary" id="start">Start</button>
-            <button class="secondary" id="reset">Reset</button>
-        </div>
+            <div class="coffee-stage">
 
-        <!-- STATS -->
-        <div class="stats">
-            ☕ Brews Completed: <span id="brews">0</span>
-        </div>
+                <div class="timer-overlay">
+                    <div class="timer-time" id="timerDisplay">25:00</div>
+                    <div class="timer-label" id="timerLabel">FOCUS TIME</div>
+                </div>
 
-        <!-- REFLECTION -->
-        <div class="reflection" id="reflection">
-            <p>How was your focus?</p>
-            <button onclick="saveFocus('good')">👍 Good</button>
-            <button onclick="saveFocus('ok')">😐 Okay</button>
-            <button onclick="saveFocus('bad')">👎 Poor</button>
-        </div>
+                <div class="coffee-cup">
+                    <div class="coffee-liquid" id="coffee">
+                        <div class="coffee-surface"></div>
+                    </div>
+                </div>
 
+                <div class="cup-holder"></div>
+
+                <div class="steam">
+                    <span></span><span></span><span></span>
+                </div>
+
+            </div>
+
+            <div class="timer-controls">
+                <button class="btn-primary" id="startPauseBtn"><span id="startPauseText">Start</span></button>
+                <button class="btn-secondary" id="resetBtn">Reset</button>
+            </div>
+
+        </div>
     </div>
 </main>
 </div>
 
-<script>
-const TOTAL=25*60;
-let remaining=TOTAL, running=false, last=null;
-const liquid=document.getElementById("liquid");
-const timeEl=document.getElementById("time");
-const msg=document.getElementById("msg");
-const cup=document.getElementById("cup");
-const brewsEl=document.getElementById("brews");
-const reflection=document.getElementById("reflection");
-
-let brews=Number(localStorage.getItem("brews")||0);
-brewsEl.textContent=brews;
-
-function format(t){
-    const m=Math.floor(t/60);
-    const s=Math.floor(t%60);
-    return `${m}:${String(s).padStart(2,"0")}`;
-}
-
-function animate(ts){
-    if(!running)return;
-    if(!last)last=ts;
-    const d=(ts-last)/1000;
-    last=ts;
-    remaining=Math.max(0,remaining-d);
-
-    const p=1-remaining/TOTAL;
-    liquid.style.height=(p*100)+"%";
-    timeEl.textContent=format(remaining);
-
-    if(p>.8){cup.className="cup fire";msg.textContent="Almost done!"}
-    else if(p>.3){cup.className="cup focus";msg.textContent="Deep focus zone"}
-    else{cup.className="cup";msg.textContent="Warming up"}
-
-    if(remaining>0) requestAnimationFrame(animate);
-    else finish();
-}
-
-function finish(){
-    running=false;
-    cup.className="cup done";
-    msg.textContent="Session complete!";
-    brews++;
-    localStorage.setItem("brews",brews);
-    brewsEl.textContent=brews;
-    reflection.style.display="block";
-}
-
-start.onclick=()=>{
-    if(!running){
-        remaining=TOTAL;
-        last=null;
-        reflection.style.display="none";
-        running=true;
-        requestAnimationFrame(animate);
-    }
-};
-
-reset.onclick=()=>{
-    running=false;
-    remaining=TOTAL;
-    liquid.style.height="0%";
-    timeEl.textContent="25:00";
-    msg.textContent="Ready to brew.";
-    cup.className="cup";
-};
-
-function saveFocus(val){
-    localStorage.setItem("lastFocus",val);
-    reflection.style.display="none";
-}
-</script>
+<!-- Scripts -->
+<script src="charts.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
