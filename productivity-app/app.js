@@ -21,42 +21,53 @@ const state = {
     selectedHabitColor: '#ffffff'
 };
 
-// --- API CLIENT ---
-const API_BASE = 'backend/api.php';
+// --- STORAGE (Static - LocalStorage) ---
+const STORAGE_KEY = 'productivity_hub_data';
 
-async function apiCall(action, data = {}) {
+function saveState() {
     try {
-        const response = await fetch(`${API_BASE}?action=${action}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        const result = await response.json();
-        if (result.error) console.error("API Error:", result.error);
-        return result;
-    } catch (e) {
-        console.error("Network Error:", e);
+        const dataToSave = {
+            pomodoro: {
+                sessionsCompleted: state.pomodoro.sessionsCompleted,
+                totalFocusTime: state.pomodoro.totalFocusTime,
+                workDuration: state.pomodoro.workDuration,
+                shortBreakDuration: state.pomodoro.shortBreakDuration,
+                longBreakDuration: state.pomodoro.longBreakDuration
+            },
+            habits: state.habits,
+            tasks: state.tasks,
+            goals: state.goals,
+            focusSessions: state.focusSessions
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+    } catch (error) {
+        console.error("Failed to save state:", error);
     }
 }
 
-// Load state from backend
-async function loadState() {
+function loadState() {
     try {
-        const response = await fetch(`${API_BASE}?action=get_data`);
-        const data = await response.json();
-        if (data && !data.error) {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const data = JSON.parse(saved);
+
+            // Load pomodoro stats
             if (data.pomodoro) {
                 Object.assign(state.pomodoro, data.pomodoro);
-                delete data.pomodoro;
             }
-            Object.assign(state, data);
+
+            // Load data arrays
+            state.habits = data.habits || [];
+            state.tasks = data.tasks || [];
+            state.goals = data.goals || [];
+            state.focusSessions = data.focusSessions || [];
 
             // Reset timer state
             state.pomodoro.isRunning = false;
             state.pomodoro.timeLeft = (state.pomodoro.workDuration || 25) * 60;
         }
     } catch (error) {
-        console.error("Failed to load state from backend:", error);
+        console.error("Failed to load state:", error);
     }
 }
 
@@ -64,8 +75,8 @@ async function loadState() {
 // INITIALIZATION
 // ===================================
 
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadState();
+document.addEventListener('DOMContentLoaded', () => {
+    loadState();
 
     initializeDashboard();
     initializePomodoro();
@@ -279,11 +290,7 @@ function completePomodoro() {
     if (state.pomodoro.mode === 'work') {
         state.pomodoro.sessionsCompleted++;
         showConfetti();
-        // Sync stats
-        apiCall('update_pomodoro', {
-            sessionsCompleted: state.pomodoro.sessionsCompleted,
-            totalFocusTime: state.pomodoro.totalFocusTime
-        });
+        saveState();
         const nextMode = state.pomodoro.sessionsCompleted % 4 === 0 ? 'long' : 'short';
         setTimeout(() => switchPomodoroMode(nextMode), 1000);
     } else {
@@ -397,7 +404,7 @@ function initializeHabits() {
 
 // Modal functions removed
 
-async function saveHabit() {
+function saveHabit() {
     const nameInput = document.getElementById('habitName');
     const name = nameInput.value.trim();
     if (!name) return;
@@ -412,14 +419,13 @@ async function saveHabit() {
     state.habits.push(habit);
     renderHabits();
     updateHabitCharts();
+    saveState();
 
     // Clear input
     nameInput.value = '';
     // Reset color to first one
     const firstColor = document.querySelector('.color-option');
     if (firstColor) firstColor.click();
-
-    await apiCall('add_habit', habit);
 }
 
 function renderHabits() {
@@ -465,7 +471,7 @@ function renderHabits() {
     updateHabitStats();
 }
 
-async function toggleHabitDay(habitId, dateStr) {
+function toggleHabitDay(habitId, dateStr) {
     const habit = state.habits.find(h => h.id === habitId);
     if (!habit) return;
 
@@ -482,19 +488,15 @@ async function toggleHabitDay(habitId, dateStr) {
 
     renderHabits();
     updateHabitCharts();
-
-    await apiCall('update_habit_dates', {
-        id: habit.id,
-        completedDates: habit.completedDates
-    });
+    saveState();
 }
 
-async function deleteHabit(habitId) {
+function deleteHabit(habitId) {
     if (!confirm('Are you sure you want to delete this habit?')) return;
     state.habits = state.habits.filter(h => h.id !== habitId);
     renderHabits();
     updateHabitCharts();
-    await apiCall('delete_habit', { id: habitId });
+    saveState();
 }
 
 function calculateHabitStreak(habit) {
@@ -584,7 +586,7 @@ function initializeTasks() {
     renderTasks();
 }
 
-async function addTask() {
+function addTask() {
     const input = document.getElementById('taskInput');
     const text = input.value.trim();
     if (!text) return;
@@ -600,8 +602,7 @@ async function addTask() {
     state.tasks.push(task);
     input.value = '';
     renderTasks();
-
-    await apiCall('add_task', task);
+    saveState();
 }
 
 function renderTasks() {
@@ -629,7 +630,7 @@ function renderTasks() {
     `).join('') : '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No completed tasks</p>';
 }
 
-async function toggleTask(taskId) {
+function toggleTask(taskId) {
     const task = state.tasks.find(t => t.id === taskId);
     if (!task) return;
 
@@ -638,16 +639,14 @@ async function toggleTask(taskId) {
 
     renderTasks();
     if (document.getElementById('todayTasks')) updateDashboardStats();
-
-    await apiCall('toggle_task', { id: taskId });
+    saveState();
 }
 
-async function deleteTask(taskId) {
+function deleteTask(taskId) {
     state.tasks = state.tasks.filter(t => t.id !== taskId);
     renderTasks();
     if (document.getElementById('todayTasks')) updateDashboardStats();
-
-    await apiCall('delete_task', { id: taskId });
+    saveState();
 }
 
 // ===================================
@@ -667,7 +666,7 @@ function initializeGoals() {
     updateMotivationalQuote();
 }
 
-async function addGoal() {
+function addGoal() {
     const input = document.getElementById('goalInput');
     const text = input.value.trim();
     if (!text) return;
@@ -681,8 +680,7 @@ async function addGoal() {
     state.goals.push(goal);
     input.value = '';
     renderGoals();
-
-    await apiCall('add_goal', goal);
+    saveState();
 }
 
 function renderGoals() {
@@ -706,18 +704,18 @@ function renderGoals() {
     updateGoalsProgress();
 }
 
-async function toggleGoal(goalId) {
+function toggleGoal(goalId) {
     const goal = state.goals.find(g => g.id === goalId);
     if (!goal) return;
     goal.completed = !goal.completed;
     renderGoals();
-    await apiCall('toggle_goal', { id: goalId });
+    saveState();
 }
 
-async function deleteGoal(goalId) {
+function deleteGoal(goalId) {
     state.goals = state.goals.filter(g => g.id !== goalId);
     renderGoals();
-    await apiCall('delete_goal', { id: goalId });
+    saveState();
 }
 
 function updateGoalsProgress() {
@@ -790,19 +788,18 @@ function endFocusSession() {
     const taskName = taskInput.value.trim();
 
     if (elapsedMinutes > 0) {
-        // Save individual focus session to database
-        apiCall('add_focus_session', {
+        // Save focus session
+        const session = {
             id: Date.now(),
             taskName: taskName || 'Untitled Session',
-            duration: elapsedMinutes
-        });
+            duration: elapsedMinutes,
+            created_at: new Date().toISOString()
+        };
+        state.focusSessions.push(session);
 
         // Update pomodoro stats
         state.pomodoro.totalFocusTime += elapsedMinutes;
-        apiCall('update_pomodoro', {
-            sessionsCompleted: state.pomodoro.sessionsCompleted,
-            totalFocusTime: state.pomodoro.totalFocusTime
-        });
+        saveState();
     }
 
     document.getElementById('startFocusBtn').style.display = 'inline-block';
