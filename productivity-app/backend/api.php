@@ -159,6 +159,26 @@ switch ($action) {
         }
         break;
 
+    // --- FOCUS SESSIONS ---
+    case 'add_focus_session':
+        if ($method === 'POST') {
+            $stmt = $conn->prepare("INSERT INTO focus_sessions (id, task_name, duration) VALUES (?, ?, ?)");
+            $stmt->bind_param("ssi", $input['id'], $input['taskName'], $input['duration']);
+            
+            if ($stmt->execute()) echo json_encode(["status" => "success"]);
+            else echo json_encode(["error" => $stmt->error]);
+        }
+        break;
+
+    case 'get_focus_sessions':
+        $data = [];
+        $res = $conn->query("SELECT * FROM focus_sessions ORDER BY created_at DESC LIMIT 10");
+        while ($row = $res->fetch_assoc()) {
+            $data[] = $row;
+        }
+        echo json_encode($data);
+        break;
+
     // --- POMODORO ---
     case 'update_pomodoro':
         if ($method === 'POST') {

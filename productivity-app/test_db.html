@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Test - Productivity Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .test-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .test-card h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        .test-result {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        .success {
+            background: #10b981;
+            color: white;
+        }
+        .error {
+            background: #ef4444;
+            color: white;
+        }
+        .info {
+            background: #f0f0f0;
+            color: #333;
+            border-left: 4px solid #667eea;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .data-table {
+            width: 100%;
+            margin-top: 1rem;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            background: #f8f9fa;
+            padding: 0.5rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .data-table td {
+            padding: 0.5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Database CRUD Test Suite</h1>
+        
+        <div class="test-grid">
+            <!-- Database Connection Test -->
+            <div class="test-card">
+                <h2>📡 Database Connection</h2>
+                <div id="dbConnectionResult"></div>
+                <button class="btn" onclick="testDBConnection()">Test Connection</button>
+            </div>
+
+            <!-- Tables Test -->
+            <div class="test-card">
+                <h2>📋 Database Tables</h2>
+                <div id="tablesResult"></div>
+                <button class="btn" onclick="testTables()">Check Tables</button>
+            </div>
+
+            <!-- Tasks CRUD Test -->
+            <div class="test-card">
+                <h2>✓ Tasks CRUD</h2>
+                <div id="tasksResult"></div>
+                <button class="btn" onclick="testTasksCRUD()">Test Tasks</button>
+            </div>
+
+            <!-- Habits CRUD Test -->
+            <div class="test-card">
+                <h2>✨ Habits CRUD</h2>
+                <div id="habitsResult"></div>
+                <button class="btn" onclick="testHabitsCRUD()">Test Habits</button>
+            </div>
+
+            <!-- Goals CRUD Test -->
+            <div class="test-card">
+                <h2>🎯 Goals CRUD</h2>
+                <div id="goalsResult"></div>
+                <button class="btn" onclick="testGoalsCRUD()">Test Goals</button>
+            </div>
+
+            <!-- Pomodoro Test -->
+            <div class="test-card">
+                <h2>☕ Pomodoro Stats</h2>
+                <div id="pomodoroResult"></div>
+                <button class="btn" onclick="testPomodoro()">Test Pomodoro</button>
+            </div>
+
+            <!-- Focus Sessions Test -->
+            <div class="test-card">
+                <h2>🧘 Focus Sessions</h2>
+                <div id="focusResult"></div>
+                <button class="btn" onclick="testFocusSessions()">Test Focus</button>
+            </div>
+
+            <!-- All Data Test -->
+            <div class="test-card">
+                <h2>🔍 View All Data</h2>
+                <div id="allDataResult"></div>
+                <button class="btn" onclick="testGetAllData()">Load All Data</button>
+            </div>
+        </div>
+
+        <div class="test-card" style="margin-top: 2rem;">
+            <h2>🚀 Run All Tests</h2>
+            <button class="btn" onclick="runAllTests()" style="background: #10b981;">Run Complete Test Suite</button>
+            <div id="allTestsResult" style="margin-top: 1rem;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'backend/api.php';
+
+        async function apiCall(action, data = {}) {
+            try {
+                const response = await fetch(`${API_BASE}?action=${action}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                return await response.json();
+            } catch (e) {
+                return { error: e.message };
+            }
+        }
+
+        function showResult(elementId, html) {
+            document.getElementById(elementId).innerHTML = html;
+        }
+
+        function testDBConnection() {
+            showResult('dbConnectionResult', '<div class="info">Testing connection...</div>');
+            
+            fetch(API_BASE + '?action=get_data')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        showResult('dbConnectionResult', 
+                            `<div class="error">❌ Connection Failed<br>${data.error}</div>`);
+                    } else {
+                        showResult('dbConnectionResult', 
+                            '<div class="success">✅ Database Connected Successfully!</div>');
+                    }
+                })
+                .catch(err => {
+                    showResult('dbConnectionResult', 
+                        `<div class="error">❌ Error: ${err.message}</div>`);
+                });
+        }
+
+        function testTables() {
+            showResult('tablesResult', '<div class="info">Checking tables...</div>');
+            
+            fetch('backend/test_tables.php')
+                .then(res => res.text())
+                .then(html => {
+                    showResult('tablesResult', html);
+                })
+                .catch(err => {
+                    showResult('tablesResult', 
+                        `<div class="error">❌ Error: ${err.message}</div>`);
+                });
+        }
+
+        async function testTasksCRUD() {
+            showResult('tasksResult', '<div class="info">Testing Tasks CRUD...</div>');
+            let results = '';
+
+            // CREATE
+            const taskId = Date.now();
+            const addResult = await apiCall('add_task', {
+                id: taskId,
+                text: 'Test Task ' + taskId,
+                priority: 'high'
+            });
+            results += addResult.status === 'success' 
+                ? '<div class="success">✅ CREATE: Task added</div>'
+                : '<div class="error">❌ CREATE failed</div>';
+
+            // READ is part of get_data
+            const data = await apiCall('get_data', {});
+            results += data.tasks && data.tasks.length > 0
+                ? `<div class="success">✅ READ: ${data.tasks.length} tasks found</div>`
+                : '<div class="error">❌ READ: No tasks</div>';
+
+            // UPDATE (toggle)
+            const toggleResult = await apiCall('toggle_task', { id: taskId });
+            results += toggleResult.status === 'success'
+                ? '<div class="success">✅ UPDATE: Task toggled</div>'
+                : '<div class="error">❌ UPDATE failed</div>';
+
+            // DELETE
+            const deleteResult = await apiCall('delete_task', { id: taskId });
+            results += deleteResult.status === 'success'
+                ? '<div class="success">✅ DELETE: Task deleted</div>'
+                : '<div class="error">❌ DELETE failed</div>';
+
+            showResult('tasksResult', results);
+        }
+
+        async function testHabitsCRUD() {
+            showResult('habitsResult', '<div class="info">Testing Habits CRUD...</div>');
+            let results = '';
+
+            const habitId = Date.now();
+            const addResult = await apiCall('add_habit', {
+                id: habitId,
+                name: 'Test Habit ' + habitId,
+                color: '#6366f1'
+            });
+            results += addResult.status === 'success'
+                ? '<div class="success">✅ CREATE: Habit added</div>'
+                : '<div class="error">❌ CREATE failed</div>';
+
+            const data = await apiCall('get_data', {});
+            results += data.habits && data.habits.length > 0
+                ? `<div class="success">✅ READ: ${data.habits.length} habits found</div>`
+                : '<div class="error">❌ READ: No habits</div>';
+
+            const updateResult = await apiCall('update_habit_dates', {
+                id: habitId,
+                completedDates: [new Date().toDateString()]
+            });
+            results += updateResult.status === 'success'
+                ? '<div class="success">✅ UPDATE: Habit dates updated</div>'
+                : '<div class="error">❌ UPDATE failed</div>';
+
+            const deleteResult = await apiCall('delete_habit', { id: habitId });
+            results += deleteResult.status === 'success'
+                ? '<div class="success">✅ DELETE: Habit deleted</div>'
+                : '<div class="error">❌ DELETE failed</div>';
+
+            showResult('habitsResult', results);
+        }
+
+        async function testGoalsCRUD() {
+            showResult('goalsResult', '<div class="info">Testing Goals CRUD...</div>');
+            let results = '';
+
+            const goalId = Date.now();
+            const addResult = await apiCall('add_goal', {
+                id: goalId,
+                text: 'Test Goal ' + goalId
+            });
+            results += addResult.status === 'success'
+                ? '<div class="success">✅ CREATE: Goal added</div>'
+                : '<div class="error">❌ CREATE failed</div>';
+
+            const data = await apiCall('get_data', {});
+            results += data.goals && data.goals.length > 0
+                ? `<div class="success">✅ READ: ${data.goals.length} goals found</div>`
+                : '<div class="error">❌ READ: No goals</div>';
+
+            const toggleResult = await apiCall('toggle_goal', { id: goalId });
+            results += toggleResult.status === 'success'
+                ? '<div class="success">✅ UPDATE: Goal toggled</div>'
+                : '<div class="error">❌ UPDATE failed</div>';
+
+            const deleteResult = await apiCall('delete_goal', { id: goalId });
+            results += deleteResult.status === 'success'
+                ? '<div class="success">✅ DELETE: Goal deleted</div>'
+                : '<div class="error">❌ DELETE failed</div>';
+
+            showResult('goalsResult', results);
+        }
+
+        async function testPomodoro() {
+            showResult('pomodoroResult', '<div class="info">Testing Pomodoro Stats...</div>');
+            let results = '';
+
+            const data = await apiCall('get_data', {});
+            if (data.pomodoro) {
+                results += '<div class="success">✅ READ: Pomodoro stats loaded</div>';
+                results += `<div class="info">Sessions: ${data.pomodoro.sessionsCompleted}<br>Focus Time: ${data.pomodoro.totalFocusTime}m</div>`;
+            }
+
+            const updateResult = await apiCall('update_pomodoro', {
+                sessionsCompleted: (data.pomodoro?.sessionsCompleted || 0) + 1,
+                totalFocusTime: (data.pomodoro?.totalFocusTime || 0) + 25
+            });
+            results += updateResult.status === 'success'
+                ? '<div class="success">✅ UPDATE: Stats updated (+1 session, +25m)</div>'
+                : '<div class="error">❌ UPDATE failed</div>';
+
+            showResult('pomodoroResult', results);
+        }
+
+        async function testFocusSessions() {
+            showResult('focusResult', '<div class="info">Testing Focus Sessions...</div>');
+            let results = '';
+
+            const sessionId = Date.now();
+            const addResult = await apiCall('add_focus_session', {
+                id: sessionId,
+                taskName: 'Test Focus Session',
+                duration: 30
+            });
+            results += addResult.status === 'success'
+                ? '<div class="success">✅ CREATE: Focus session logged</div>'
+                : '<div class="error">❌ CREATE failed: ' + (addResult.error || 'Unknown') + '</div>';
+
+            const sessions = await apiCall('get_focus_sessions', {});
+            if (sessions && Array.isArray(sessions)) {
+                results += `<div class="success">✅ READ: ${sessions.length} sessions found</div>`;
+                if (sessions.length > 0) {
+                    results += '<div class="info"><strong>Recent Sessions:</strong><br>';
+                    sessions.slice(0, 3).forEach(s => {
+                        results += `${s.task_name} - ${s.duration}m<br>`;
+                    });
+                    results += '</div>';
+                }
+            }
+
+            showResult('focusResult', results);
+        }
+
+        async function testGetAllData() {
+            showResult('allDataResult', '<div class="info">Loading all data...</div>');
+            
+            const data = await apiCall('get_data', {});
+            if (data.error) {
+                showResult('allDataResult', `<div class="error">❌ Error: ${data.error}</div>`);
+                return;
+            }
+
+            let html = '<div class="success">✅ Data loaded successfully!</div>';
+            html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            showResult('allDataResult', html);
+        }
+
+        async function runAllTests() {
+            showResult('allTestsResult', '<div class="info">Running all tests... Please wait...</div>');
+            
+            await testDBConnection();
+            await new Promise(r => setTimeout(r, 500));
+            
+            await testTasksCRUD();
+            await new Promise(r => setTimeout(r, 500));
+            
+            await testHabitsCRUD();
+            await new Promise(r => setTimeout(r, 500));
+            
+            await testGoalsCRUD();
+            await new Promise(r => setTimeout(r, 500));
+            
+            await testPomodoro();
+            await new Promise(r => setTimeout(r, 500));
+            
+            await testFocusSessions();
+            await new Promise(r => setTimeout(r, 500));
+            
+            showResult('allTestsResult', 
+                '<div class="success">✅ All tests completed! Check individual cards for results.</div>');
+        }
+    </script>
+</body>
+</html>

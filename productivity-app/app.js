@@ -786,8 +786,18 @@ function endFocusSession() {
     if (!focusInterval) return;
     clearInterval(focusInterval);
     const elapsedMinutes = Math.floor((Date.now() - focusStartTime) / 1000 / 60);
+    const taskInput = document.getElementById('focusTaskInput');
+    const taskName = taskInput.value.trim();
 
     if (elapsedMinutes > 0) {
+        // Save individual focus session to database
+        apiCall('add_focus_session', {
+            id: Date.now(),
+            taskName: taskName || 'Untitled Session',
+            duration: elapsedMinutes
+        });
+
+        // Update pomodoro stats
         state.pomodoro.totalFocusTime += elapsedMinutes;
         apiCall('update_pomodoro', {
             sessionsCompleted: state.pomodoro.sessionsCompleted,
