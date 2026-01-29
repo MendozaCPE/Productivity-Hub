@@ -21,54 +21,72 @@ const state = {
     selectedHabitColor: '#ffffff'
 };
 
-// --- STORAGE (Static - LocalStorage) ---
-const STORAGE_KEY = 'productivity_hub_data';
-
-function saveState() {
+// --- API HANDLING ---
+async function apiCall(action, method = 'POST', data = null) {
     try {
-        const dataToSave = {
-            pomodoro: {
-                sessionsCompleted: state.pomodoro.sessionsCompleted,
-                totalFocusTime: state.pomodoro.totalFocusTime,
-                workDuration: state.pomodoro.workDuration,
-                shortBreakDuration: state.pomodoro.shortBreakDuration,
-                longBreakDuration: state.pomodoro.longBreakDuration
-            },
-            habits: state.habits,
-            tasks: state.tasks,
-            goals: state.goals,
-            focusSessions: state.focusSessions
+        const options = {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            }
         };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+
+        if (data) {
+            options.body = JSON.stringify(data);
+        }
+
+        const response = await fetch(`backend/api.php?action=${action}`, options);
+        const result = await response.json();
+
+        if (result.error) {
+            console.error('API Error:', result.error);
+            // Optional: Show error toast
+            return null;
+        }
+        return result;
     } catch (error) {
-        console.error("Failed to save state:", error);
+        console.error('Network/Server Error:', error);
+        return null;
     }
 }
 
-function loadState() {
+async function loadState() {
     try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            const data = JSON.parse(saved);
+        const response = await fetch('backend/api.php?action=get_data');
+        const data = await response.json();
 
+        if (data) {
             // Load pomodoro stats
             if (data.pomodoro) {
-                Object.assign(state.pomodoro, data.pomodoro);
+                state.pomodoro.sessionsCompleted = data.pomodoro.sessionsCompleted || 0;
+                state.pomodoro.totalFocusTime = data.pomodoro.totalFocusTime || 0;
             }
 
             // Load data arrays
             state.habits = data.habits || [];
             state.tasks = data.tasks || [];
             state.goals = data.goals || [];
-            state.focusSessions = data.focusSessions || [];
 
-            // Reset timer state
-            state.pomodoro.isRunning = false;
-            state.pomodoro.timeLeft = (state.pomodoro.workDuration || 25) * 60;
+            // Focus sessions might need separate loading if not in get_data, 
+            // but the API seems to rely on get_data for everything except focus history list
+
+            // Refresh UI
+            renderApp();
         }
     } catch (error) {
         console.error("Failed to load state:", error);
     }
+}
+
+function renderApp() {
+    updateDashboardStats();
+    renderHabits();
+    renderTasks();
+    renderGoals();
+    updatePomodoroStats();
+
+    // Timer state relies on defaults until user interaction, 
+    // but stats are updated from DB.
 }
 
 // ===================================
@@ -84,10 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeTasks();
     initializeGoals();
     initializeFocus();
-
-    if (document.querySelector('.dashboard-grid')) {
-        updateDashboardStats();
-    }
 });
 
 // ===================================
@@ -235,7 +249,6 @@ function initializePomodoro() {
                 const val = parseInt(e.target.value);
                 state.pomodoro[id] = val;
                 const modeKey = id.replace('Duration', '');
-                // Correct mapping: workDuration -> work, shortBreakDuration -> short, longBreakDuration -> long
                 const modeMap = { workDuration: 'work', shortBreakDuration: 'short', longBreakDuration: 'long' };
                 if (state.pomodoro.mode === modeMap[id] && !state.pomodoro.isRunning) {
                     state.pomodoro.timeLeft = val * 60;
@@ -290,7 +303,13 @@ function completePomodoro() {
     if (state.pomodoro.mode === 'work') {
         state.pomodoro.sessionsCompleted++;
         showConfetti();
-        saveState();
+
+        // Update stats in DB
+        apiCall('update_pomodoro', 'POST', {
+            sessionsCompleted: state.pomodoro.sessionsCompleted,
+            totalFocusTime: state.pomodoro.totalFocusTime
+        });
+
         const nextMode = state.pomodoro.sessionsCompleted % 4 === 0 ? 'long' : 'short';
         setTimeout(() => switchPomodoroMode(nextMode), 1000);
     } else {
@@ -341,7 +360,6 @@ function updateTimerDisplay() {
         ring.style.strokeDashoffset = offset;
     }
 
-    // Coffee cup animation for pomodoro.php
     const coffee = document.getElementById('coffee');
     if (coffee) {
         const durations = {
@@ -355,7 +373,6 @@ function updateTimerDisplay() {
         coffee.style.height = `${heightPercent}%`;
     }
 }
-
 
 function updatePomodoroStats() {
     const sessionCount = document.getElementById('sessionCount');
@@ -373,13 +390,11 @@ function updatePomodoroStats() {
 // ===================================
 
 function initializeHabits() {
-    // Check if we are on the habits page by checking for the container or unique element
     if (!document.getElementById('habits')) return;
 
     const saveBtn = document.getElementById('saveHabitBtn');
     if (saveBtn) saveBtn.addEventListener('click', saveHabit);
 
-    // Allow enter key in habit name input
     const nameInput = document.getElementById('habitName');
     if (nameInput) {
         nameInput.addEventListener('keypress', (e) => {
@@ -395,14 +410,11 @@ function initializeHabits() {
         });
     });
 
-    // Default selection
     state.selectedHabitColor = '#6366f1';
 
     renderHabits();
     updateHabitCharts();
 }
-
-// Modal functions removed
 
 function saveHabit() {
     const nameInput = document.getElementById('habitName');
@@ -416,16 +428,24 @@ function saveHabit() {
         completedDates: []
     };
 
-    state.habits.push(habit);
-    renderHabits();
-    updateHabitCharts();
-    saveState();
+    // Save to DB
+    apiCall('add_habit', 'POST', {
+        id: habit.id,
+        name: habit.name,
+        color: habit.color
+    }).then(res => {
+        if (res && res.status === 'success') {
+            state.habits.push(habit);
+            renderHabits();
+            updateHabitCharts();
 
-    // Clear input
-    nameInput.value = '';
-    // Reset color to first one
-    const firstColor = document.querySelector('.color-option');
-    if (firstColor) firstColor.click();
+            // Clear input
+            nameInput.value = '';
+            // Reset color
+            const firstColor = document.querySelector('.color-option');
+            if (firstColor) firstColor.click();
+        }
+    });
 }
 
 function renderHabits() {
@@ -456,7 +476,7 @@ function renderHabits() {
                 <div class="habit-days">
                     ${last7Days.map(date => {
             const dateStr = date.toDateString();
-            const isCompleted = habit.completedDates.includes(dateStr);
+            const isCompleted = habit.completedDates && habit.completedDates.includes(dateStr);
             return `<div class="habit-day ${isCompleted ? 'completed' : ''}" 
                          onclick="toggleHabitDay(${habit.id}, '${dateStr}')"></div>`;
         }).join('')}
@@ -475,6 +495,8 @@ function toggleHabitDay(habitId, dateStr) {
     const habit = state.habits.find(h => h.id === habitId);
     if (!habit) return;
 
+    if (!habit.completedDates) habit.completedDates = [];
+
     const index = habit.completedDates.indexOf(dateStr);
     if (index > -1) {
         habit.completedDates.splice(index, 1);
@@ -486,22 +508,33 @@ function toggleHabitDay(habitId, dateStr) {
         }
     }
 
+    // Update in DB
+    apiCall('update_habit_dates', 'POST', {
+        id: habit.id,
+        completedDates: habit.completedDates
+    });
+
     renderHabits();
     updateHabitCharts();
-    saveState();
 }
 
 function deleteHabit(habitId) {
     if (!confirm('Are you sure you want to delete this habit?')) return;
-    state.habits = state.habits.filter(h => h.id !== habitId);
-    renderHabits();
-    updateHabitCharts();
-    saveState();
+
+    apiCall('delete_habit', 'POST', { id: habitId }).then(res => {
+        if (res && res.status === 'success') {
+            state.habits = state.habits.filter(h => h.id !== habitId);
+            renderHabits();
+            updateHabitCharts();
+        }
+    });
 }
 
 function calculateHabitStreak(habit) {
     let streak = 0;
     const today = new Date();
+    if (!habit.completedDates) return 0;
+
     for (let i = 0; i < 365; i++) {
         const checkDate = new Date(today);
         checkDate.setDate(checkDate.getDate() - i);
@@ -519,7 +552,7 @@ function updateHabitStats() {
 
     const today = new Date().toDateString();
     const count = state.habits.length;
-    const completedToday = state.habits.filter(h => h.completedDates.includes(today)).length;
+    const completedToday = state.habits.filter(h => h.completedDates && h.completedDates.includes(today)).length;
     const rate = count > 0 ? Math.round((completedToday / count) * 100) : 0;
     document.getElementById('habitCompletionRate').textContent = `${rate}%`;
 
@@ -530,8 +563,6 @@ function updateHabitStats() {
 function updateHabitCharts() {
     if (!document.getElementById('habitsWeeklyChart')) return;
 
-    // Logic for charts remains same (relying on charts.js which uses global 'state')
-    // Re-render chart wrapper
     const weeklyChart = new ChartRenderer('habitsWeeklyChart');
     const today = new Date();
     const weekLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -539,7 +570,7 @@ function updateHabitCharts() {
         const date = new Date(today);
         date.setDate(date.getDate() - (6 - i));
         const dateStr = date.toDateString();
-        return state.habits.filter(h => h.completedDates.includes(dateStr)).length;
+        return state.habits.filter(h => h.completedDates && h.completedDates.includes(dateStr)).length;
     });
 
     weeklyChart.drawBarChart({
@@ -554,7 +585,7 @@ function updateHabitCharts() {
         date.setDate(date.getDate() - (29 - i));
         const dateStr = date.toDateString();
         const total = state.habits.length;
-        const completed = state.habits.filter(h => h.completedDates.includes(dateStr)).length;
+        const completed = state.habits.filter(h => h.completedDates && h.completedDates.includes(dateStr)).length;
         return total > 0 ? Math.round((completed / total) * 100) : 0;
     });
     const monthLabels = Array.from({ length: 30 }, (_, i) => {
@@ -593,16 +624,23 @@ function addTask() {
 
     const priority = document.getElementById('taskPriority').value;
     const task = {
-        id: Date.now(),
+        id: Date.now().toString(), // Ensure ID is string for DB consistency if needed
         text,
         priority,
         completed: false
     };
 
-    state.tasks.push(task);
-    input.value = '';
-    renderTasks();
-    saveState();
+    apiCall('add_task', 'POST', {
+        id: task.id,
+        text: task.text,
+        priority: task.priority
+    }).then(res => {
+        if (res && res.status === 'success') {
+            state.tasks.push(task);
+            input.value = '';
+            renderTasks();
+        }
+    });
 }
 
 function renderTasks() {
@@ -615,38 +653,43 @@ function renderTasks() {
 
     activeContainer.innerHTML = activeTasks.length ? activeTasks.map(task => `
         <div class="task-item priority-${task.priority}">
-            <div class="task-checkbox" onclick="toggleTask(${task.id})"></div>
+            <div class="task-checkbox" onclick="toggleTask('${task.id}')"></div>
             <div class="task-text">${task.text}</div>
-            <button class="task-delete" onclick="deleteTask(${task.id})">✕</button>
+            <button class="task-delete" onclick="deleteTask('${task.id}')">✕</button>
         </div>
     `).join('') : '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No active tasks</p>';
 
     completedContainer.innerHTML = completedTasks.length ? completedTasks.map(task => `
         <div class="task-item priority-${task.priority} completed">
-            <div class="task-checkbox" onclick="toggleTask(${task.id})"></div>
+            <div class="task-checkbox" onclick="toggleTask('${task.id}')"></div>
             <div class="task-text">${task.text}</div>
-            <button class="task-delete" onclick="deleteTask(${task.id})">✕</button>
+            <button class="task-delete" onclick="deleteTask('${task.id}')">✕</button>
         </div>
     `).join('') : '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No completed tasks</p>';
 }
 
 function toggleTask(taskId) {
-    const task = state.tasks.find(t => t.id === taskId);
+    const task = state.tasks.find(t => t.id == taskId);
     if (!task) return;
 
-    task.completed = !task.completed;
-    if (task.completed) showConfetti();
-
-    renderTasks();
-    if (document.getElementById('todayTasks')) updateDashboardStats();
-    saveState();
+    apiCall('toggle_task', 'POST', { id: taskId }).then(res => {
+        if (res && res.status === 'success') {
+            task.completed = !task.completed;
+            if (task.completed) showConfetti();
+            renderTasks();
+            if (document.getElementById('todayTasks')) updateDashboardStats();
+        }
+    });
 }
 
 function deleteTask(taskId) {
-    state.tasks = state.tasks.filter(t => t.id !== taskId);
-    renderTasks();
-    if (document.getElementById('todayTasks')) updateDashboardStats();
-    saveState();
+    apiCall('delete_task', 'POST', { id: taskId }).then(res => {
+        if (res && res.status === 'success') {
+            state.tasks = state.tasks.filter(t => t.id != taskId);
+            renderTasks();
+            if (document.getElementById('todayTasks')) updateDashboardStats();
+        }
+    });
 }
 
 // ===================================
@@ -672,15 +715,18 @@ function addGoal() {
     if (!text) return;
 
     const goal = {
-        id: Date.now(),
+        id: Date.now().toString(),
         text,
         completed: false
     };
 
-    state.goals.push(goal);
-    input.value = '';
-    renderGoals();
-    saveState();
+    apiCall('add_goal', 'POST', { id: goal.id, text: goal.text }).then(res => {
+        if (res && res.status === 'success') {
+            state.goals.push(goal);
+            input.value = '';
+            renderGoals();
+        }
+    });
 }
 
 function renderGoals() {
@@ -695,9 +741,9 @@ function renderGoals() {
 
     container.innerHTML = state.goals.map(goal => `
         <div class="goal-item ${goal.completed ? 'completed' : ''}">
-            <div class="goal-checkbox" onclick="toggleGoal(${goal.id})"></div>
+            <div class="goal-checkbox" onclick="toggleGoal('${goal.id}')"></div>
             <div class="goal-text">${goal.text}</div>
-            <div style="margin-left:auto; cursor:pointer;" onclick="deleteGoal(${goal.id})">✕</div>
+            <div style="margin-left:auto; cursor:pointer;" onclick="deleteGoal('${goal.id}')">✕</div>
         </div>
     `).join('');
 
@@ -705,17 +751,24 @@ function renderGoals() {
 }
 
 function toggleGoal(goalId) {
-    const goal = state.goals.find(g => g.id === goalId);
+    const goal = state.goals.find(g => g.id == goalId);
     if (!goal) return;
-    goal.completed = !goal.completed;
-    renderGoals();
-    saveState();
+
+    apiCall('toggle_goal', 'POST', { id: goalId }).then(res => {
+        if (res && res.status === 'success') {
+            goal.completed = !goal.completed;
+            renderGoals();
+        }
+    });
 }
 
 function deleteGoal(goalId) {
-    state.goals = state.goals.filter(g => g.id !== goalId);
-    renderGoals();
-    saveState();
+    apiCall('delete_goal', 'POST', { id: goalId }).then(res => {
+        if (res && res.status === 'success') {
+            state.goals = state.goals.filter(g => g.id != goalId);
+            renderGoals();
+        }
+    });
 }
 
 function updateGoalsProgress() {
@@ -790,64 +843,62 @@ function endFocusSession() {
     if (elapsedMinutes > 0) {
         // Save focus session
         const session = {
-            id: Date.now(),
+            id: Date.now().toString(),
             taskName: taskName || 'Untitled Session',
             duration: elapsedMinutes,
             created_at: new Date().toISOString()
         };
-        state.focusSessions.push(session);
 
-        // Update pomodoro stats
-        state.pomodoro.totalFocusTime += elapsedMinutes;
-        saveState();
+        // Save to DB
+        apiCall('add_focus_session', 'POST', {
+            id: session.id,
+            taskName: session.taskName,
+            duration: session.duration
+        }).then(res => {
+            if (res && res.status === 'success') {
+                state.focusSessions.push(session);
+                // Also update pomodoro stats total focus time
+                state.pomodoro.totalFocusTime += elapsedMinutes;
+                apiCall('update_pomodoro', 'POST', {
+                    sessionsCompleted: state.pomodoro.sessionsCompleted,
+                    totalFocusTime: state.pomodoro.totalFocusTime
+                });
+                updatePomodoroStats();
+            }
+        });
     }
 
+    // Reset UI
     document.getElementById('startFocusBtn').style.display = 'inline-block';
     document.getElementById('endFocusBtn').style.display = 'none';
-    document.getElementById('focusLabel').textContent = "Great job!";
-
-    const input = document.getElementById('focusTaskInput');
-    input.style.display = 'block';
-    input.value = '';
-
-    const sessionsList = document.getElementById('focusSessionsList');
-    if (sessionsList) sessionsList.innerHTML += `<div>Focused for ${elapsedMinutes}m</div>`;
-
-    const totalToday = document.getElementById('totalFocusTimeToday');
-    if (totalToday) totalToday.textContent = state.pomodoro.totalFocusTime + "m";
+    document.getElementById('focusLabel').textContent = 'What are you working on?';
+    taskInput.style.display = 'block';
+    taskInput.value = '';
+    document.getElementById('focusTimerDisplay').textContent = "00:00";
 }
 
-// ===================================
-// UTILS
-// ===================================
-
+// Utility for Confetti
 function showConfetti() {
-    const confettiContainer = document.getElementById('confetti');
-    if (!confettiContainer) return;
-    for (let i = 0; i < 50; i++) {
-        const confetto = document.createElement('div');
-        confetto.classList.add('confetti-piece');
-        confetto.style.left = Math.random() * 100 + 'vw';
-        confetto.style.animationDuration = (Math.random() * 3 + 2) + 's';
-        confetto.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-        confettiContainer.appendChild(confetto);
-        setTimeout(() => confetto.remove(), 5000);
+    // Simple confetti effect placeholder
+    // In a real app we'd use a library like canvas-confetti
+    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff'];
+    for (let i = 0; i < 30; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'fixed';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.top = '-10px';
+        confetti.style.width = '10px';
+        confetti.style.height = '10px';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.zIndex = '9999';
+        confetti.style.transition = 'top 2s ease-out, transform 2s ease-out';
+        document.body.appendChild(confetti);
+
+        setTimeout(() => {
+            confetti.style.top = '110vh';
+            confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+        }, 10);
+
+        setTimeout(() => confetti.remove(), 2000);
     }
 }
-
-// Dynamic styles for confetti
-const style = document.createElement('style');
-style.innerHTML = `
-.confetti-piece {
-    position: fixed;
-    top: -10px;
-    width: 10px;
-    height: 10px;
-    z-index: 9999;
-    animation: fall linear forwards;
-}
-@keyframes fall {
-    to { transform: translateY(100vh) rotate(720deg); }
-}
-`;
-document.head.appendChild(style);
