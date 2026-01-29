@@ -28,7 +28,8 @@ switch ($action) {
             'pomodoro' => [
                 'sessionsCompleted' => 0,
                 'totalFocusTime' => 0
-            ]
+            ],
+            'focusSessions' => []
         ];
 
         // Tasks
@@ -58,6 +59,12 @@ switch ($action) {
         if ($row = $res->fetch_assoc()) {
             $data['pomodoro']['sessionsCompleted'] = (int)$row['sessions_completed'];
             $data['pomodoro']['totalFocusTime'] = (int)$row['total_focus_time'];
+        }
+
+        // Focus Sessions (Last 30 days for charts)
+        $res = $conn->query("SELECT * FROM focus_sessions WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) ORDER BY created_at DESC");
+        while ($row = $res->fetch_assoc()) {
+            $data['focusSessions'][] = $row;
         }
 
         echo json_encode($data);

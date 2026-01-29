@@ -66,6 +66,7 @@ async function loadState() {
             state.habits = data.habits || [];
             state.tasks = data.tasks || [];
             state.goals = data.goals || [];
+            state.focusSessions = data.focusSessions || [];
 
             // Focus sessions might need separate loading if not in get_data, 
             // but the API seems to rely on get_data for everything except focus history list
@@ -167,8 +168,83 @@ function updateDashboardStats() {
     updateTasksPreview();
 
     // Update charts if they exist
-    if (typeof updateAllCharts === 'function' && document.getElementById('weeklyChart')) {
+    if (document.getElementById('weeklyChart')) {
         updateAllCharts();
+    }
+}
+
+function updateAllCharts() {
+    // 1. Weekly Productivity (Focus Time)
+    if (document.getElementById('weeklyChart')) {
+        const chart = new ChartRenderer('weeklyChart');
+        const today = new Date();
+        const labels = [];
+        const values = [];
+
+        // Last 7 days
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+            labels.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
+
+            // Calculate focus time for this day (from sessions)
+            // Note: In a real app we might want to aggregate this on backend
+            // For now, we filter loaded focusSessions
+            const dateStr = date.toISOString().split('T')[0];
+            const dayMinutes = state.focusSessions
+                .filter(s => s.created_at && s.created_at.startsWith(dateStr))
+                .reduce((acc, s) => acc + parseInt(s.duration), 0);
+
+            values.push(dayMinutes);
+        }
+
+        chart.drawBarChart({
+            labels: labels,
+            values: values,
+            colors: ['#c67c4e', '#e3a985', '#312e81', '#4f46e5', '#818cf8'], // Use theme colors
+            showValues: true
+        });
+    }
+
+    // 2. Habit Completion Rate (Line Chart)
+    if (document.getElementById('habitCompletionChart')) {
+        const chart = new ChartRenderer('habitCompletionChart');
+        const today = new Date();
+        const labels = [];
+        const values = [];
+
+        // Last 7 days
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+            const label = date.toLocaleDateString('en-US', { weekday: 'short' });
+            labels.push(label);
+
+            const dateStr = date.toDateString();
+            const totalHabits = state.habits.length;
+            if (totalHabits > 0) {
+                // Check local array structure
+                let completedCount = 0;
+                state.habits.forEach(h => {
+                    // Check both date formats just in case
+                    if (h.completedDates && (h.completedDates.includes(dateStr) || h.completedDates.includes(date.toISOString().split('T')[0]))) {
+                        completedCount++;
+                    }
+                });
+                values.push(Math.round((completedCount / totalHabits) * 100));
+            } else {
+                values.push(0);
+            }
+        }
+
+        chart.drawLineChart({
+            labels: labels,
+            datasets: [{
+                label: 'Habit Completion (%)',
+                values: values,
+                color: '#10b981' // Green for habits
+            }]
+        });
     }
 }
 
