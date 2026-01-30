@@ -11,7 +11,6 @@
 <link rel="stylesheet" href="css/global.css">
 
 <style>
-/* ================= THEME ================= */
 :root{
     --bg:#191716;
     --surface-dark:#231f1c;
@@ -37,9 +36,6 @@ body{
 
 .container{display:flex;min-height:100vh}
 
-
-
-/* ================= MAIN ================= */
 .main-content{flex:1;padding:4rem}
 
 .page-title{
@@ -65,22 +61,39 @@ body{
     box-shadow:0 40px 80px rgba(0,0,0,.55);
 }
 
+/* fullscreen base */
+.pomodoro-card:fullscreen{
+    width:100%;
+    height:100%;
+    border-radius:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    padding-top:8rem;
+}
+
 /* ================= MODE SELECT ================= */
 .timer-mode-selector{
-    display:inline-flex;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:.6rem;
     background:var(--surface-light);
-    padding:.4rem;
+    padding:.6rem;
     border-radius:999px;
-    margin-bottom:2.5rem;
+    margin:0 auto 3rem auto;
+    width:fit-content;
 }
 
 .mode-btn{
     border:none;
     background:transparent;
-    padding:.5rem 1.4rem;
+    padding:.7rem 1.8rem;
     border-radius:999px;
     color:var(--text-secondary);
     cursor:pointer;
+    font-size:.9rem;
+    font-weight:500;
 }
 
 .mode-btn.active{
@@ -118,10 +131,7 @@ body{
     opacity:.75;
 }
 
-/* ================================================= */
-/* ========== PIXELATED CUP (ONLY PART) ============ */
-/* ================================================= */
-
+/* CUP */
 .coffee-cup{
     position:absolute;
     bottom:40px;
@@ -129,14 +139,32 @@ body{
     transform:translateX(-50%);
     width:180px;
     height:130px;
-
     background:#e6dccf;
     border:5px solid #b8a999;
-    border-radius:0;
     overflow:visible;
-
     image-rendering:pixelated;
+    cursor:pointer;
 }
+/* pixelated ceramic texture */
+.coffee-cup{
+    background:
+        repeating-linear-gradient(
+            0deg,
+            #e6dccf 0px,
+            #e6dccf 6px,
+            #ddd2c4 6px,
+            #ddd2c4 12px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            rgba(0,0,0,.04) 0px,
+            rgba(0,0,0,.04) 4px,
+            transparent 4px,
+            transparent 8px
+        );
+    background-blend-mode:multiply;
+}
+
 
 /* coffee fill */
 .coffee-liquid{
@@ -146,7 +174,6 @@ body{
     height:0%;
     background:#5a3a22;
     transition:height .25s steps(10);
-    overflow:hidden;
 }
 
 .coffee-surface{
@@ -157,7 +184,7 @@ body{
     background:#8a5a3a;
 }
 
-/* mug ear – outer (BLOCKY) */
+/* mug ear outer */
 .coffee-cup::after{
     content:"";
     position:absolute;
@@ -165,17 +192,13 @@ body{
     top:28px;
     width:46px;
     height:72px;
-
     background:#e6dccf;
     border:5px solid #b8a999;
-
-    /* NO CURVES */
     border-radius:6px;
-
     z-index:2;
 }
 
-/* mug ear – inner hole (BLOCKY) */
+/* mug ear hole */
 .coffee-cup::before{
     content:"";
     position:absolute;
@@ -183,17 +206,10 @@ body{
     top:40px;
     width:26px;
     height:44px;
-
     background:var(--bg);
-
-    /* NO CURVES */
     border-radius:4px;
-
     z-index:3;
 }
-
-
-
 
 /* saucer */
 .cup-holder{
@@ -256,13 +272,56 @@ body{
     border:1px solid var(--border);
     color:var(--text-secondary);
 }
+
+/* ================= FULLSCREEN FIXES ================= */
+
+/* move timer higher */
+.pomodoro-card:fullscreen .timer-overlay{
+    top:-50px;
+}
+
+/* lower and scale cup safely */
+.pomodoro-card:fullscreen .coffee-stage{
+    margin-top:12rem;
+    transform:scale(1.9);
+}
+
+/* keep mug handle hole visible */
+.pomodoro-card:fullscreen .coffee-cup::before{
+    background:#191716;
+}
+
+/* bring steam back into view */
+.pomodoro-card:fullscreen .steam span{
+    bottom:200px;
+}
+
+/* scale timer text */
+.pomodoro-card:fullscreen .timer-time{
+    font-size:3rem;
+}
+
+.pomodoro-card:fullscreen .timer-label{
+    font-size:1.05rem;
+    margin-top:.6rem;
+}
+/* ================= FULLSCREEN MODE BUTTON SCALE ================= */
+.pomodoro-card:fullscreen .timer-mode-selector{
+    padding:1rem;
+    margin-bottom:4rem;
+}
+
+.pomodoro-card:fullscreen .mode-btn{
+    padding:1rem 2.4rem;
+    font-size:1.05rem;
+}
+
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
     <div class="logo">
         <div class="logo-icon">⚡</div>
@@ -299,18 +358,19 @@ body{
     <div class="sidebar-footer">
         <div class="streak-badge" style="background: transparent; border: none; padding: 0;">
             <span style="font-size: 1.2rem;">🔥</span>
-            <span style="font-weight: 700; color: var(--text-primary);">Day Streak: <span id="currentStreak">0</span></span>
+            <span style="font-weight: 700; color: var(--text-primary);">
+                Day Streak: <span id="currentStreak">0</span>
+            </span>
         </div>
     </div>
 </aside>
 
-<!-- MAIN -->
 <main class="main-content">
     <h2 class="page-title">Pomodoro Timer</h2>
     <p class="page-subtitle">Brew your productivity ☕</p>
 
     <div class="pomodoro-container">
-        <div class="pomodoro-card">
+        <div class="pomodoro-card" id="pomodoroCard">
 
             <div class="timer-mode-selector">
                 <button class="mode-btn active" data-mode="work">Brew</button>
@@ -325,7 +385,7 @@ body{
                     <div class="timer-label" id="timerLabel">FOCUS TIME</div>
                 </div>
 
-                <div class="coffee-cup">
+                <div class="coffee-cup" id="fullscreenToggle">
                     <div class="coffee-liquid" id="coffee">
                         <div class="coffee-surface"></div>
                     </div>
@@ -340,7 +400,9 @@ body{
             </div>
 
             <div class="timer-controls">
-                <button class="btn-primary" id="startPauseBtn"><span id="startPauseText">Start</span></button>
+                <button class="btn-primary" id="startPauseBtn">
+                    <span id="startPauseText">Start</span>
+                </button>
                 <button class="btn-secondary" id="resetBtn">Reset</button>
             </div>
 
@@ -349,8 +411,21 @@ body{
 </main>
 </div>
 
-<!-- Scripts -->
 <script src="charts.js"></script>
 <script src="app.js"></script>
+
+<script>
+const card = document.getElementById("pomodoroCard");
+const mug = document.getElementById("fullscreenToggle");
+
+mug.addEventListener("click", () => {
+    if (!document.fullscreenElement) {
+        card.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+});
+</script>
+
 </body>
 </html>
