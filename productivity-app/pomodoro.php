@@ -145,26 +145,6 @@ body{
     image-rendering:pixelated;
     cursor:pointer;
 }
-/* pixelated ceramic texture */
-.coffee-cup{
-    background:
-        repeating-linear-gradient(
-            0deg,
-            #e6dccf 0px,
-            #e6dccf 6px,
-            #ddd2c4 6px,
-            #ddd2c4 12px
-        ),
-        repeating-linear-gradient(
-            90deg,
-            rgba(0,0,0,.04) 0px,
-            rgba(0,0,0,.04) 4px,
-            transparent 4px,
-            transparent 8px
-        );
-    background-blend-mode:multiply;
-}
-
 
 /* coffee fill */
 .coffee-liquid{
@@ -274,46 +254,141 @@ body{
 }
 
 /* ================= FULLSCREEN FIXES ================= */
+.pomodoro-card:fullscreen .timer-overlay{top:-50px}
+.pomodoro-card:fullscreen .coffee-stage{margin-top:12rem;transform:scale(1.9)}
+.pomodoro-card:fullscreen .coffee-cup::before{background:#191716}
+.pomodoro-card:fullscreen .steam span{bottom:200px}
+.pomodoro-card:fullscreen .timer-time{font-size:3rem}
+.pomodoro-card:fullscreen .timer-label{font-size:1.05rem;margin-top:.6rem}
 
-/* move timer higher */
-.pomodoro-card:fullscreen .timer-overlay{
-    top:-50px;
+.pomodoro-card:fullscreen .timer-mode-selector{padding:1rem;margin-bottom:4rem}
+.pomodoro-card:fullscreen .mode-btn{padding:1rem 2.4rem;font-size:1.05rem}
+
+/* ================= PIXEL ART CUP OVERRIDES ================= */
+
+/* body */
+.coffee-cup{
+    background:#e9edf9;
+    outline:4px solid #1e1e1e;
+    outline-offset:-4px;
+    box-shadow:
+        inset -6px 0 0 #c7d0f0,
+        inset 6px 0 0 #ffffff,
+        inset 0 -6px 0 #b8c1e6,
+        inset 0 6px 0 #ffffff;
 }
 
-/* lower and scale cup safely */
-.pomodoro-card:fullscreen .coffee-stage{
-    margin-top:12rem;
-    transform:scale(1.9);
+/* handle */
+.coffee-cup::after{
+    background:#e9edf9;
+    outline:4px solid #1e1e1e;
 }
 
-/* keep mug handle hole visible */
-.pomodoro-card:fullscreen .coffee-cup::before{
-    background:#191716;
+.coffee-cup::before{
+    background:var(--bg);
+    outline:4px solid #1e1e1e;
 }
 
-/* bring steam back into view */
-.pomodoro-card:fullscreen .steam span{
-    bottom:200px;
+/* coffee liquid */
+.coffee-liquid{
+    background:#4a2f1c;
+    box-shadow:
+        inset 0 6px 0 #6b4026,
+        inset 0 -6px 0 #2f1a0f;
 }
 
-/* scale timer text */
-.pomodoro-card:fullscreen .timer-time{
-    font-size:3rem;
+/* coffee surface */
+.coffee-surface{
+    background:#6b4026;
+    height:8px;
 }
 
-.pomodoro-card:fullscreen .timer-label{
-    font-size:1.05rem;
-    margin-top:.6rem;
+/* steam slightly chunkier */
+.steam span{
+    width:14px;
+    height:26px;
 }
-/* ================= FULLSCREEN MODE BUTTON SCALE ================= */
-.pomodoro-card:fullscreen .timer-mode-selector{
-    padding:1rem;
-    margin-bottom:4rem;
+/* ================= PIXEL MODE ICONS ================= */
+.pixel-icon{
+    width:18px;
+    height:18px;
+    position:relative;
+    image-rendering:pixelated;
 }
 
-.pomodoro-card:fullscreen .mode-btn{
-    padding:1rem 2.4rem;
-    font-size:1.05rem;
+/* BREW */
+.pixel-icon.brew{
+    background:#cfa57a;
+    outline:2px solid #1c1c1c;
+    box-shadow:
+        inset 0 -4px 0 #a87c52,
+        inset 0 4px 0 #e7c39c;
+}
+.pixel-icon.brew::after{
+    content:"";
+    position:absolute;
+    top:-4px;
+    left:2px;
+    width:14px;
+    height:4px;
+    background:#f2e6d8;
+    outline:2px solid #1c1c1c;
+}
+
+/* SIP */
+.pixel-icon.sip{
+    background:#eef1ff;
+    outline:2px solid #1c1c1c;
+}
+.pixel-icon.sip::after{
+    content:"";
+    position:absolute;
+    right:-6px;
+    top:4px;
+    width:6px;
+    height:10px;
+    background:#eef1ff;
+    outline:2px solid #1c1c1c;
+}
+
+/* REFILL */
+.pixel-icon.refill{
+    background:#5a3a22;
+    outline:2px solid #1c1c1c;
+}
+.pixel-icon.refill::after{
+    content:"";
+    position:absolute;
+    right:-6px;
+    top:6px;
+    width:6px;
+    height:6px;
+    background:#5a3a22;
+    outline:2px solid #1c1c1c;
+}
+/* ================= MODE BUTTON SPACING FIX ================= */
+
+/* better internal spacing */
+.mode-btn{
+    padding:.8rem 2rem;
+    line-height:1;
+}
+
+/* icon–text separation */
+.mode-btn span:last-child{
+    margin-left:.3rem;
+}
+
+/* center icons perfectly */
+.pixel-icon{
+    display:inline-block;
+    flex-shrink:0;
+}
+
+/* slightly more breathing room inside the pill */
+.timer-mode-selector{
+    gap:.8rem;
+    padding:.7rem;
 }
 
 </style>
@@ -329,36 +404,18 @@ body{
     </div>
 
     <nav class="nav-menu">
-        <a href="dashboard.php" class="nav-item">
-            <span class="nav-icon">📊</span>
-            <span class="nav-label">Dashboard</span>
-        </a>
-        <a href="pomodoro.php" class="nav-item active">
-            <span class="nav-icon">☕</span>
-            <span class="nav-label">Pomodoro</span>
-        </a>
-        <a href="habits.php" class="nav-item">
-            <span class="nav-icon">✨</span>
-            <span class="nav-label">Habits</span>
-        </a>
-        <a href="tasks.php" class="nav-item">
-            <span class="nav-icon">✓</span>
-            <span class="nav-label">Tasks</span>
-        </a>
-        <a href="goals.php" class="nav-item">
-            <span class="nav-icon">🎯</span>
-            <span class="nav-label">Goals</span>
-        </a>
-        <a href="focus.php" class="nav-item">
-            <span class="nav-icon">🧘</span>
-            <span class="nav-label">Focus</span>
-        </a>
+        <a href="dashboard.php" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+        <a href="pomodoro.php" class="nav-item active"><span class="nav-icon">☕</span><span class="nav-label">Pomodoro</span></a>
+        <a href="habits.php" class="nav-item"><span class="nav-icon">✨</span><span class="nav-label">Habits</span></a>
+        <a href="tasks.php" class="nav-item"><span class="nav-icon">✓</span><span class="nav-label">Tasks</span></a>
+        <a href="goals.php" class="nav-item"><span class="nav-icon">🎯</span><span class="nav-label">Goals</span></a>
+        <a href="focus.php" class="nav-item"><span class="nav-icon">🧘</span><span class="nav-label">Focus</span></a>
     </nav>
 
     <div class="sidebar-footer">
-        <div class="streak-badge" style="background: transparent; border: none; padding: 0;">
-            <span style="font-size: 1.2rem;">🔥</span>
-            <span style="font-weight: 700; color: var(--text-primary);">
+        <div class="streak-badge" style="background:transparent;border:none;padding:0">
+            <span style="font-size:1.2rem">🔥</span>
+            <span style="font-weight:700;color:var(--text-primary)">
                 Day Streak: <span id="currentStreak">0</span>
             </span>
         </div>
@@ -373,13 +430,21 @@ body{
         <div class="pomodoro-card" id="pomodoroCard">
 
             <div class="timer-mode-selector">
-                <button class="mode-btn active" data-mode="work">Brew</button>
-                <button class="mode-btn" data-mode="short">Sip</button>
-                <button class="mode-btn" data-mode="long">Refill</button>
+                <button class="mode-btn active" data-mode="work">
+                    <span class="pixel-icon brew"></span>
+                    <span>Brew</span>
+                </button>
+                <button class="mode-btn" data-mode="short">
+                    <span class="pixel-icon sip"></span>
+                    <span>Sip</span>
+                </button>
+                <button class="mode-btn" data-mode="long">
+                    <span class="pixel-icon refill"></span>
+                    <span>Refill</span>
+                </button>
             </div>
 
             <div class="coffee-stage">
-
                 <div class="timer-overlay">
                     <div class="timer-time" id="timerDisplay">25:00</div>
                     <div class="timer-label" id="timerLabel">FOCUS TIME</div>
@@ -392,17 +457,11 @@ body{
                 </div>
 
                 <div class="cup-holder"></div>
-
-                <div class="steam">
-                    <span></span><span></span><span></span>
-                </div>
-
+                <div class="steam"><span></span><span></span><span></span></div>
             </div>
 
             <div class="timer-controls">
-                <button class="btn-primary" id="startPauseBtn">
-                    <span id="startPauseText">Start</span>
-                </button>
+                <button class="btn-primary" id="startPauseBtn"><span id="startPauseText">Start</span></button>
                 <button class="btn-secondary" id="resetBtn">Reset</button>
             </div>
 
@@ -415,16 +474,9 @@ body{
 <script src="app.js"></script>
 
 <script>
-const card = document.getElementById("pomodoroCard");
-const mug = document.getElementById("fullscreenToggle");
-
-mug.addEventListener("click", () => {
-    if (!document.fullscreenElement) {
-        card.requestFullscreen();
-    } else {
-        document.exitFullscreen();
-    }
-});
+const card=document.getElementById("pomodoroCard");
+const mug=document.getElementById("fullscreenToggle");
+mug.addEventListener("click",()=>{!document.fullscreenElement?card.requestFullscreen():document.exitFullscreen()});
 </script>
 
 </body>
