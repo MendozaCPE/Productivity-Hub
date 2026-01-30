@@ -75,12 +75,30 @@
             </div>
 
             <nav class="nav-menu">
-                <a href="dashboard.php" class="nav-item">📊 Dashboard</a>
-                <a href="pomodoro.php" class="nav-item">☕ Pomodoro</a>
-                <a href="habits.php" class="nav-item">✨ Habits</a>
-                <a href="tasks.php" class="nav-item">✓ Tasks</a>
-                <a href="goals.php" class="nav-item">🎯 Goals</a>
-                <a href="focus.php" class="nav-item active">🧘 Focus</a>
+                <a href="dashboard.php" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a href="pomodoro.php" class="nav-item">
+                    <span class="nav-icon">☕</span>
+                    <span class="nav-label">Pomodoro</span>
+                </a>
+                <a href="habits.php" class="nav-item">
+                    <span class="nav-icon">✨</span>
+                    <span class="nav-label">Habits</span>
+                </a>
+                <a href="tasks.php" class="nav-item">
+                    <span class="nav-icon">✓</span>
+                    <span class="nav-label">Tasks</span>
+                </a>
+                <a href="goals.php" class="nav-item">
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-label">Goals</span>
+                </a>
+                <a href="focus.php" class="nav-item active">
+                    <span class="nav-icon">🧘</span>
+                    <span class="nav-label">Focus</span>
+                </a>
             </nav>
 
             <div class="sidebar-footer">
