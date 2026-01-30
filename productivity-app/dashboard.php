@@ -73,7 +73,7 @@
 
 .chart-card {
     grid-column: span 2;
-    min-height: 400px;
+    /* min-height handled by canvas/JS */
 }
     </style>
 </head>
